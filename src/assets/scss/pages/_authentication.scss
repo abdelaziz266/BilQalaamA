@@ -2,9 +2,9 @@
 @use "../utils/mixins" as *;
 
 .account-bg-01 {
-    background-image: url(../../../../public/assets/img/authentication/login-bg.jpg);
+    background-image: url(../../images/BilQalaamImage.jpeg);
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: contain;
     background-position: center;
     @include rounded(10px);
     height: calc(100vh - 40px);

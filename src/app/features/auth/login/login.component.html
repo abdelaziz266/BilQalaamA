@@ -1,4 +1,4 @@
-<div class="account-page bg-white">
+<div class="account-page bg-white" dir="rtl">
   <div class="main-wrapper">
     <div class="overflow-hidden p-3 acc-vh">
       <div class="row vh-100 w-100 g-0">
@@ -7,49 +7,49 @@
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-100 p-4" novalidate>
               
               <div class="text-center mb-4 auth-logo">
-                <img src="assets/images/PNGTransparent.png" class="img-fluid" alt="Logo">
+                <img src="assets/images/BilQalaamIcon.jpeg" class="img-fluid" alt="Logo">
               </div>
 
-              <!-- User Name -->
+              <!-- اسم المستخدم -->
               <div class="mb-3">
-                <label class="form-label">User Name</label>
+                <label class="form-label">اسم المستخدم</label>
                 <div class="input-group input-group-flat">
-                  <input type="text" formControlName="userName" class="form-control" maxlength="11">
                   <span class="input-group-text">
-                    <i class="ti ti-phone"></i>
+                    <i class="ti ti-user"></i>
                   </span>
+                  <input type="text" formControlName="userName" class="form-control" maxlength="11">
                 </div>
                 <span class="text-danger" *ngIf="userName.invalid && (userName.dirty || userName.touched)">
-                  <span *ngIf="userName.errors?.['required']">User Name is required.</span>
+                  <span *ngIf="userName.errors?.['required']">اسم المستخدم مطلوب.</span>
                   <span *ngIf="userName.errors?.['minlength'] || userName.errors?.['maxlength']">
-                    User Name must be exactly 11 digits.
+                    اسم المستخدم يجب أن يكون 11 رقم بالضبط.
                   </span>
                 </span>
               </div>
 
-              <!-- Password -->
+              <!-- كلمة المرور -->
               <div class="mb-3">
-                <label class="form-label">Password</label>
+                <label class="form-label">كلمة المرور</label>
                 <div class="input-group input-group-flat pass-group">
-                  <input [type]="passwordVisible ? 'text' : 'password'" 
-                         formControlName="password" 
-                         class="form-control">
                   <span class="input-group-text toggle-password" (click)="togglePassword()" tabindex="0">
                     <i class="ti" [ngClass]="passwordVisible ? 'ti-eye' : 'ti-eye-off'"></i>
                   </span>
+                  <input [type]="passwordVisible ? 'text' : 'password'" 
+                         formControlName="password" 
+                         class="form-control">
                 </div>
                 <span class="text-danger" *ngIf="password.invalid && (password.dirty || password.touched)">
-                  <span *ngIf="password.errors?.['required']">Password is required.</span>
+                  <span *ngIf="password.errors?.['required']">كلمة المرور مطلوبة.</span>
                   <span *ngIf="password.errors?.['minlength']">
-                    Password must be at least 5 characters.
+                    كلمة المرور يجب أن تكون 5 أحرف على الأقل.
                   </span>
                 </span>
               </div>
 
-              <!-- Submit -->
+              <!-- تسجيل الدخول -->
               <div class="mb-3">
                 <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
-                  {{ loading ? 'Signing in...' : 'Sign In' }}
+                  {{ loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول' }}
                 </button>
               </div>
 

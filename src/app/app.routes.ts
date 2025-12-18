@@ -28,16 +28,6 @@ export const routes: Routes = [
             path: 'Companies', 
             loadComponent: () => import('./features/super-admin/companies/companies-home/companies-home.component').then(m => m.CompaniesHomeComponent),
             canActivate: [AuthGuard]
-          },
-          {
-            path: 'ServiceCategory', 
-            loadComponent: () => import('./features/super-admin/ServiceCategory/get-service-categories/get-service-categories.component').then(m => m.GetServiceCategoriesComponent),
-            canActivate: [AuthGuard]
-          },
-          {
-            path: 'serviceCompanies/:serviceId', 
-            loadComponent: () => import('./features/super-admin/ServiceCategory/get-service-companies/get-service-companies.component').then(m => m.GetServiceCompaniesComponent),
-            canActivate: [AuthGuard]
           }
         ]
       }
