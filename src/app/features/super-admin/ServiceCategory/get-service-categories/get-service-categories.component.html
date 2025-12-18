@@ -1,0 +1,13 @@
+<div class="services-grid">
+  <div class="service-card"
+       *ngFor="let item of returnData.data"
+       (click)="openServiceUnits(item.id)">
+    <img 
+      [src]="item.logo" 
+      class="service-icon" 
+      loading="eager"
+      [style.background]="'#f0f0f0'"
+    />
+    <div class="service-title">{{ item.name }}</div>
+  </div>
+</div>
