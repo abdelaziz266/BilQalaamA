@@ -430,7 +430,7 @@ export class DataService {
       menu: [
         
         {
-          menuValue: 'Supervisors',
+          menuValue: 'المشرفين',
           icon: 'users',
           hasSubRoute: false,
           showSubRoute: false,

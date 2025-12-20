@@ -15,7 +15,7 @@ export class SettingsService {
   last = '';
   // Layout Mode
   public layoutMode: BehaviorSubject<string> = new BehaviorSubject<string>(
-    localStorage.getItem('layoutMode') || 'default'
+    localStorage.getItem('layoutMode') || 'rtl'
   );
 
   // Layout Width
