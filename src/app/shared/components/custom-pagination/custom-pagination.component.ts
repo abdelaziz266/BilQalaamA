@@ -84,3 +84,4 @@ export class CustomPaginationComponent implements OnChanges {
     }
   }
 }
+}

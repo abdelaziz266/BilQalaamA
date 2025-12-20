@@ -445,6 +445,7 @@ export class DataService {
           route: routes.serviceCategory,
           base: 'ServiceCategory',
           subRoutes: [],
+<<<<<<< HEAD
         },
         {
           menuValue: 'Supervisors',
