@@ -446,6 +446,15 @@ export class DataService {
           route: routes.teachers,
           base: 'Teachers',
           subRoutes: [],
+        },
+        {
+          menuValue: 'العائلات',
+          icon: 'home-heart',
+          hasSubRoute: false,
+          showSubRoute: false,
+          route: routes.families,
+          base: 'Families',
+          subRoutes: [],
         }
       ],
     },

@@ -1,3 +1,4 @@
+@use 'sass:color';
 // @import 'primeicons/primeicons.css';
 @use "@angular/material/prebuilt-themes/indigo-pink.css";
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lightgallery.css");
@@ -20,7 +21,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: darken(#5da3a2, 10%);
+  background: color.adjust(#5da3a2, $lightness: -10%);
 }
 
 /* Primary Button Theme */
@@ -30,8 +31,8 @@
   color: #fff;
 
   &:hover, &:active, &:focus {
-    background-color: darken(#5da3a2, 7%) !important;
-    border-color: darken(#5da3a2, 7%) !important;
+    background-color: color.adjust(#5da3a2, $lightness: -7%) !important;
+    border-color: color.adjust(#5da3a2, $lightness: -7%) !important;
     color: #fff !important;
   }
 

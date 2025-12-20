@@ -18,4 +18,5 @@ export const routes={
   serviceCompanies: '/ServiceCompanies/:serviceId',
   supervisors: '/Supervisors',
   teachers: '/Teachers',
+  families: '/Families',
 };

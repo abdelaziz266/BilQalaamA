@@ -33,6 +33,11 @@ export const routes: Routes = [
             path: 'Teachers',
             loadComponent: () => import('./features/super-admin/teachers/teachers-home/teachers-home.component').then(m => m.TeachersHomeComponent),
             canActivate: [AuthGuard]
+          },
+          {
+            path: 'Families',
+            loadComponent: () => import('./features/super-admin/families/families-home/families-home.component').then(m => m.FamiliesHomeComponent),
+            canActivate: [AuthGuard]
           }
         ]
       }
