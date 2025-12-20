@@ -11,7 +11,7 @@
             </nav>
         </div>
         <div class="gap-2 d-flex align-items-center flex-wrap">
-            <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add">
+            <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add" (click)="resetForm()">
                 <i class="ti ti-square-rounded-plus-filled me-1"></i>إضافة مشرف جديد
             </button>
         </div>
@@ -88,113 +88,66 @@
 <div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcanvas_add" #offcanvasAdd>
     <div class="offcanvas-header border-bottom">
         <h5 class="fw-semibold">إضافة مشرف جديد</h5>
-        <button type="button" class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
-            data-bs-dismiss="offcanvas" aria-label="Close">
-            <i class="ti ti-x"></i>
-        </button>
+        
     </div>
     <div class="offcanvas-body">
         <form [formGroup]="supervisorForm" (ngSubmit)="submitForm()">
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-12 mb-3">
                     <label class="form-label">الاسم الكامل <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="fullName" placeholder="أدخل الاسم الكامل">
+                    <input type="text" class="form-control" formControlName="fullName" dir="auto">
                     <div class="text-danger mt-1" *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)">
                         <small *ngIf="fullName.errors?.['required']">الاسم الكامل مطلوب.</small>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control" formControlName="email" placeholder="أدخل البريد الإلكتروني">
+                    <input type="email" class="form-control" formControlName="email" dir="auto">
                     <div class="text-danger mt-1" *ngIf="email.invalid && (email.dirty || email.touched)">
                         <small *ngIf="email.errors?.['required']">البريد الإلكتروني مطلوب.</small>
-                        <small *ngIf="email.errors?.['email']">صيغة البريد الإلكتروني غير صحيحة.</small>
+                        <small *ngIf="email.errors?.['email'] || email.errors?.['pattern']">صيغة البريد الإلكتروني غير صحيحة (يجب أن ينتهي بـ .com).</small>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">رقم الهاتف <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="phoneNumber" placeholder="أدخل رقم الهاتف" maxlength="11">
+                    <input type="text" class="form-control" formControlName="phoneNumber" maxlength="11" dir="auto">
                     <div class="text-danger mt-1" *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched)">
                         <small *ngIf="phoneNumber.errors?.['required']">رقم الهاتف مطلوب.</small>
-                        <small *ngIf="phoneNumber.errors?.['minlength'] || phoneNumber.errors?.['maxlength']">رقم الهاتف يجب أن يكون 11 رقم بالضبط.</small>
+                        <small *ngIf="phoneNumber.errors?.['pattern']">رقم الهاتف يجب أن يبدأ بـ 010 أو 011 أو 012 ويتكون من 11 رقم.</small>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">كلمة المرور <span class="text-danger">*</span></label>
-                    <input type="password" class="form-control" formControlName="password" placeholder="أدخل كلمة المرور">
+                    <div class="input-group">
+                        <input [type]="passwordVisible ? 'text' : 'password'" class="form-control" formControlName="password" dir="auto">
+                        <button class="btn btn-outline-light border" type="button" (click)="togglePasswordVisible()">
+                            <i class="ti" [ngClass]="passwordVisible ? 'ti-eye' : 'ti-eye-off'"></i>
+                        </button>
+                    </div>
                     <div class="text-danger mt-1" *ngIf="password.invalid && (password.dirty || password.touched)">
                         <small *ngIf="password.errors?.['required']">كلمة المرور مطلوبة.</small>
                     </div>
                 </div>
-                
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">سعر الساعة <span class="text-danger">*</span></label>
-                    <input type="number" class="form-control" formControlName="hourlyRate" placeholder="0">
-                    <div class="text-danger mt-1" *ngIf="hourlyRate.invalid && (hourlyRate.dirty || hourlyRate.touched)">
-                        <small *ngIf="hourlyRate.errors?.['required']">سعر الساعة مطلوب.</small>
-                        <small *ngIf="hourlyRate.errors?.['min']">سعر الساعة يجب أن يكون 0 على الأقل.</small>
+                    <label class="form-label">تأكيد كلمة المرور <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input [type]="confirmPasswordVisible ? 'text' : 'password'" class="form-control" formControlName="confirmPassword" dir="auto">
+                        <button class="btn btn-outline-light border" type="button" (click)="toggleConfirmPasswordVisible()">
+                            <i class="ti" [ngClass]="confirmPasswordVisible ? 'ti-eye' : 'ti-eye-off'"></i>
+                        </button>
                     </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">العملة <span class="text-danger">*</span></label>
-                    <p-select [options]="currencyOptions" 
-                        formControlName="currency" optionLabel="label" optionValue="value" 
-                        placeholder="اختر العملة" class="form-control w-100"></p-select>
-                    <div class="text-danger mt-1" *ngIf="currency.invalid && (currency.dirty || currency.touched)">
-                        <small *ngIf="currency.errors?.['required']">العملة مطلوبة.</small>
-                    </div>
-                </div>
-                <div class="col-12 text-end mt-3">
-                    <button type="button" class="btn btn-light me-2" data-bs-dismiss="offcanvas">إلغاء</button>
-                    <button type="submit" class="btn btn-primary" >حفظ المشرف</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Edit Supervisor Offcanvas -->
-<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcanvas_edit" #offcanvasEdit>
-    <div class="offcanvas-header border-bottom">
-        <h5 class="fw-semibold">تعديل المشرف</h5>
-        <button type="button" class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
-            data-bs-dismiss="offcanvas" aria-label="Close">
-            <i class="ti ti-x"></i>
-        </button>
-    </div>
-    <div class="offcanvas-body">
-        <form [formGroup]="supervisorForm" (ngSubmit)="submitForm()">
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">الاسم الكامل <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="fullName">
-                    <div class="text-danger mt-1" *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)">
-                        <small *ngIf="fullName.errors?.['required']">الاسم الكامل مطلوب.</small>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control" formControlName="email">
-                    <div class="text-danger mt-1" *ngIf="email.invalid && (email.dirty || email.touched)">
-                        <small *ngIf="email.errors?.['required']">البريد الإلكتروني مطلوب.</small>
-                        <small *ngIf="email.errors?.['email']">صيغة البريد الإلكتروني غير صحيحة.</small>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">رقم الهاتف <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="phoneNumber" maxlength="11">
-                    <div class="text-danger mt-1" *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched)">
-                        <small *ngIf="phoneNumber.errors?.['required']">رقم الهاتف مطلوب.</small>
-                        <small *ngIf="phoneNumber.errors?.['minlength'] || phoneNumber.errors?.['maxlength']">رقم الهاتف يجب أن يكون 11 رقم بالضبط.</small>
+                    <div class="text-danger mt-1" *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)">
+                        <small *ngIf="confirmPassword.errors?.['required']">تأكيد كلمة المرور مطلوب.</small>
+                        <small *ngIf="confirmPassword.errors?.['passwordMismatch']">كلمات المرور غير متطابقة.</small>
                     </div>
                 </div>
                 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">سعر الساعة <span class="text-danger">*</span></label>
-                    <input type="number" class="form-control" formControlName="hourlyRate">
+                    <input type="number" class="form-control" formControlName="hourlyRate" dir="auto">
                     <div class="text-danger mt-1" *ngIf="hourlyRate.invalid && (hourlyRate.dirty || hourlyRate.touched)">
                         <small *ngIf="hourlyRate.errors?.['required']">سعر الساعة مطلوب.</small>
-                        <small *ngIf="hourlyRate.errors?.['min']">سعر الساعة يجب أن يكون 0 على الأقل.</small>
+                        <small *ngIf="hourlyRate.errors?.['min']">سعر الساعة يجب أن يكون أكبر من 0.</small>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -207,7 +160,87 @@
                     </div>
                 </div>
                 <div class="col-12 text-end mt-3">
-                    <button type="button" class="btn btn-light me-2" data-bs-dismiss="offcanvas">إلغاء</button>
+                    <button type="button" class="btn btn-light mx-2" data-bs-dismiss="offcanvas">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" >حفظ المشرف</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Supervisor Offcanvas -->
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcanvas_edit" #offcanvasEdit>
+    <div class="offcanvas-header border-bottom">
+        <h5 class="fw-semibold">تعديل المشرف</h5>
+        
+    </div>
+    <div class="offcanvas-body">
+        <form [formGroup]="supervisorForm" (ngSubmit)="submitForm()">
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <label class="form-label">الاسم الكامل <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="fullName" dir="auto">
+                    <div class="text-danger mt-1" *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)">
+                        <small *ngIf="fullName.errors?.['required']">الاسم الكامل مطلوب.</small>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" formControlName="email" dir="auto">
+                    <div class="text-danger mt-1" *ngIf="email.invalid && (email.dirty || email.touched)">
+                        <small *ngIf="email.errors?.['required']">البريد الإلكتروني مطلوب.</small>
+                        <small *ngIf="email.errors?.['email'] || email.errors?.['pattern']">صيغة البريد الإلكتروني غير صحيحة (يجب أن ينتهي بـ .com).</small>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">رقم الهاتف <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="phoneNumber" maxlength="11" dir="auto">
+                    <div class="text-danger mt-1" *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched)">
+                        <small *ngIf="phoneNumber.errors?.['required']">رقم الهاتف مطلوب.</small>
+                        <small *ngIf="phoneNumber.errors?.['pattern']">رقم الهاتف يجب أن يبدأ بـ 010 أو 011 أو 012 ويتكون من 11 رقم.</small>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">كلمة المرور (اختياري)</label>
+                    <div class="input-group">
+                        <input [type]="passwordVisible ? 'text' : 'password'" class="form-control" formControlName="password" dir="auto">
+                        <button class="btn btn-outline-light border" type="button" (click)="togglePasswordVisible()">
+                            <i class="ti" [ngClass]="passwordVisible ? 'ti-eye' : 'ti-eye-off'"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">تأكيد كلمة المرور</label>
+                    <div class="input-group">
+                        <input [type]="confirmPasswordVisible ? 'text' : 'password'" class="form-control" formControlName="confirmPassword" dir="auto">
+                        <button class="btn btn-outline-light border" type="button" (click)="toggleConfirmPasswordVisible()">
+                            <i class="ti" [ngClass]="confirmPasswordVisible ? 'ti-eye' : 'ti-eye-off'"></i>
+                        </button>
+                    </div>
+                    <div class="text-danger mt-1" *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)">
+                        <small *ngIf="confirmPassword.errors?.['passwordMismatch']">كلمات المرور غير متطابقة.</small>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">سعر الساعة <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" formControlName="hourlyRate" dir="auto">
+                    <div class="text-danger mt-1" *ngIf="hourlyRate.invalid && (hourlyRate.dirty || hourlyRate.touched)">
+                        <small *ngIf="hourlyRate.errors?.['required']">سعر الساعة مطلوب.</small>
+                        <small *ngIf="hourlyRate.errors?.['min']">سعر الساعة يجب أن يكون أكبر من 0.</small>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">العملة <span class="text-danger">*</span></label>
+                    <p-select [options]="currencyOptions" 
+                        formControlName="currency" optionLabel="label" optionValue="value" 
+                        class="form-control w-100"></p-select>
+                    <div class="text-danger mt-1" *ngIf="currency.invalid && (currency.dirty || currency.touched)">
+                        <small *ngIf="currency.errors?.['required']">العملة مطلوبة.</small>
+                    </div>
+                </div>
+                <div class="col-12 text-end mt-3">
+                    <button type="button" class="btn btn-light mx-2" data-bs-dismiss="offcanvas">إلغاء</button>
                     <button type="submit" class="btn btn-primary" [disabled]="supervisorForm.invalid">تحديث المشرف</button>
                 </div>
             </div>

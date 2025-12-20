@@ -4,6 +4,42 @@
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #5da3a2;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: darken(#5da3a2, 10%);
+}
+
+/* Primary Button Theme */
+.btn-primary {
+  background-color: #5da3a2;
+  border-color: #5da3a2;
+  color: #fff;
+
+  &:hover, &:active, &:focus {
+    background-color: darken(#5da3a2, 7%) !important;
+    border-color: darken(#5da3a2, 7%) !important;
+    color: #fff !important;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.25rem rgba(93, 163, 162, 0.5) !important;
+  }
+}
+
 // mat sorter
 .mat-sort-header-container {
   justify-content: space-between;
@@ -124,9 +160,8 @@ app-custom-pagination .pagination_section {
 
 .page-item.active .page-link {
   color: #fff;
-  background-color: #354ba0;
-  border-color: #354ba0
-;
+  background-color: #5da3a2;
+  border-color: #5da3a2;
 }
 
 .pagination-custom-class {

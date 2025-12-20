@@ -10,6 +10,7 @@ import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currenc
 import { SupervisorService } from '../../../../core/services/supervisor.service';
 import { SharedService } from '../../../../core/services/shared.service';
 import { ToastrService } from 'ngx-toastr';
+import { de } from 'intl-tel-input/i18n';
 
 @Component({
   selector: 'app-supervisors-home',
@@ -28,9 +29,19 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   isEditMode: boolean = false;
   currencyOptions = CurrencyOptions;
   currencyLabels = CurrencyLabels;
+  passwordVisible: boolean = false;
+  confirmPasswordVisible: boolean = false;
 
   getCurrencyLabel(currency: number): string {
     return (this.currencyLabels as any)[currency] || 'Unknown';
+  }
+
+  togglePasswordVisible(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
+  toggleConfirmPasswordVisible(): void {
+    this.confirmPasswordVisible = !this.confirmPasswordVisible;
   }
 
   // Pagination
@@ -55,11 +66,31 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
     this.supervisorForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/)]],
-      phoneNumber: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
-      password: ['', this.isEditMode ? [] : [Validators.required]],
-      hourlyRate: [0, [Validators.required, Validators.min(0)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^01[012][0-9]{8}$/)]],
+      password: [null, this.isEditMode ? [] : [Validators.required]],
+      confirmPassword: ['', this.isEditMode ? [] : [Validators.required]],
+      hourlyRate: [0, [Validators.required, Validators.min(0.01)]],
       currency: [1, Validators.required]
-    });
+    }, { validators: this.passwordMatchValidator });
+  }
+
+  passwordMatchValidator(form: FormGroup) {
+    const password = form.get('password');
+    const confirmPassword = form.get('confirmPassword');
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+    } else if (confirmPassword) {
+      const errors = confirmPassword.errors;
+      if (errors) {
+        delete errors['passwordMismatch'];
+        if (Object.keys(errors).length === 0) {
+          confirmPassword.setErrors(null);
+        } else {
+          confirmPassword.setErrors(errors);
+        }
+      }
+    }
+    return null;
   }
 
   get fullName() {
@@ -76,6 +107,10 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
 
   get password() {
     return this.supervisorForm.get('password')!;
+  }
+
+  get confirmPassword() {
+    return this.supervisorForm.get('confirmPassword')!;
   }
 
   get hourlyRate() {
@@ -103,7 +138,6 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   getSupervisors(): void {
     this.supervisorService.GetSupervisors(this.pageNumber=1, this.rowCount=10).subscribe({
       next: (res) => {
-        debugger
         if (res.status === 200) {
           this.supervisors = res.data.items;
           this.pagesCount = res.data.pagesCount;
@@ -111,8 +145,8 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
         }
       },
       error: (err) => {
-        debugger
-        this.toastr.error(err.message);
+        const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
+        this.toastr.error(errorMsg);
       }
     });
   }
@@ -126,14 +160,23 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   resetForm(): void {
     this.isEditMode = false;
     this.selectedSupervisorId = null;
+    this.passwordVisible = false;
+    this.confirmPasswordVisible = false;
     this.supervisorForm.reset({
       fullName: '',
       email: '',
       phoneNumber: '',
       password: '',
+      confirmPassword: '',
       hourlyRate: 0,
       currency: 1
     });
+    
+    // Restore validators for Add mode
+    this.supervisorForm.get('password')?.setValidators([Validators.required]);
+    this.supervisorForm.get('password')?.updateValueAndValidity();
+    this.supervisorForm.get('confirmPassword')?.setValidators([Validators.required]);
+    this.supervisorForm.get('confirmPassword')?.updateValueAndValidity();
   }
 
   openEditModal(id: number): void {
@@ -147,11 +190,14 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
         phoneNumber: supervisor.phoneNumber,
         hourlyRate: supervisor.hourlyRate,
         currency: supervisor.currency,
-        password: '' // Password usually not returned or edited this way
+        password: '',
+        confirmPassword: ''
       });
       // Password is not required when editing
       this.supervisorForm.get('password')?.setValidators([]);
       this.supervisorForm.get('password')?.updateValueAndValidity();
+      this.supervisorForm.get('confirmPassword')?.setValidators([]);
+      this.supervisorForm.get('confirmPassword')?.updateValueAndValidity();
     }
   }
 
@@ -160,14 +206,15 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   }
 
   submitForm(): void {
-    debugger;
     if (this.supervisorForm.invalid) {
       this.supervisorForm.markAllAsTouched();
       return;
     }
-
-    const data = this.supervisorForm.value;
+debugger;
+    const { confirmPassword, ...data } = this.supervisorForm.value;
     if (this.isEditMode && this.selectedSupervisorId) {
+      if (data.password === null || data.password === '') 
+        delete data.password;
       this.supervisorService.updateSupervisor(this.selectedSupervisorId, { ...data, id: this.selectedSupervisorId }).subscribe({
         next: (res) => {
           this.toastr.success(res.message);
@@ -175,7 +222,9 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
           this.closeOffcanvas();
         },
         error: (err) => {
-          this.toastr.error(err.message);
+          debugger;
+          const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
+          this.toastr.error(errorMsg);
         }
       });
     } else {
@@ -186,7 +235,8 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
           this.closeOffcanvas();
         },
         error: (err) => {
-          this.toastr.error(err.message);
+          const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
+          this.toastr.error(errorMsg);
         }
       });
     }
@@ -207,7 +257,8 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
           this.getSupervisors();
         },
         error: (err) => {
-          this.toastr.error(err.message);
+          const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
+          this.toastr.error(errorMsg);
         }
       });
     }

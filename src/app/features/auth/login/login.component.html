@@ -17,7 +17,7 @@
                   <span class="input-group-text">
                     <i class="ti ti-user"></i>
                   </span>
-                  <input type="text" formControlName="userName" class="form-control text-start" dir="ltr">
+                  <input type="text" formControlName="userName" class="form-control" dir="auto">
                 </div>
                 <span class="text-danger" *ngIf="userName.invalid && (userName.dirty || userName.touched)">
                   <span *ngIf="userName.errors?.['required']">اسم المستخدم مطلوب.</span>
@@ -36,7 +36,7 @@
                   </span>
                   <input [type]="passwordVisible ? 'text' : 'password'" 
                          formControlName="password" 
-                         class="form-control text-start" dir="ltr">
+                         class="form-control" dir="auto">
                 </div>
                 <span class="text-danger" *ngIf="password.invalid && (password.dirty || password.touched)">
                   <span *ngIf="password.errors?.['required']">كلمة المرور مطلوبة.</span>
