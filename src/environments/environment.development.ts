@@ -1,8 +1,7 @@
 //test
 export const environment = {
-    production: true,
-    apiUrl: 'http://alahramanc-001-site7.rtempurl.com/api/',
-    apiUrlBtakka: 'https://alahramanc-001-site3.gtempurl.com/api/',
+    production: false,
+    apiUrl: 'https://localhost:44361/api/',
     secretKey: '16171871AhmedSalah@@##', // هذا هو المفتاح السري
 };
 //Production

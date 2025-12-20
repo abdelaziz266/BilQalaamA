@@ -428,25 +428,7 @@ export class DataService {
       showAsTab: true,
       separateRoute: false,
       menu: [
-        {
-          menuValue: 'Companies',
-          icon: 'building-community',
-          hasSubRoute: false,
-          showSubRoute: false,
-          route: routes.companies,
-          base: 'companies',
-          subRoutes: [],
-        },
-        {
-          menuValue: 'Service Category',
-          icon: 'shield-check',
-          hasSubRoute: false,
-          showSubRoute: false,
-          route: routes.serviceCategory,
-          base: 'ServiceCategory',
-          subRoutes: [],
-<<<<<<< HEAD
-        },
+        
         {
           menuValue: 'Supervisors',
           icon: 'users',

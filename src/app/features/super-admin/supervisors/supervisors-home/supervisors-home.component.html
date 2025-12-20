@@ -37,10 +37,9 @@
                 <table class="table table-striped mb-0" matSort (matSortChange)="sortData($event)">
                     <thead>
                         <tr>
-                            <th mat-sort-header="fullName">Full Name</th>
+                            <th mat-sort-header="fullName">Name</th>
                             <th mat-sort-header="email">Email</th>
                             <th mat-sort-header="phoneNumber">Phone</th>
-                            <th mat-sort-header="supervisorName">Supervisor Name</th>
                             <th mat-sort-header="hourlyRate">Hourly Rate</th>
                             <th>Action</th>
                         </tr>
@@ -50,8 +49,7 @@
                             <td>{{data.fullName}}</td>
                             <td>{{data.email}}</td>
                             <td>{{data.phoneNumber}}</td>
-                            <td>{{data.supervisorName}}</td>
-                            <td>{{data.hourlyRate}} {{data.currency === 1 ? 'USD' : 'EGP'}}</td>
+                            <td>{{data.hourlyRate}} {{getCurrencyLabel(data.currency)}}</td>
                             <td>
                                 <div class="dropdown table-action">
                                     <a href="javascript:void(0);" class="action-icon btn btn-xs shadow btn-icon btn-outline-light"
@@ -101,36 +99,54 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Full Name <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" formControlName="fullName" placeholder="Enter full name">
+                    <div class="text-danger mt-1" *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)">
+                        <small *ngIf="fullName.errors?.['required']">Full name is required.</small>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Email <span class="text-danger">*</span></label>
                     <input type="email" class="form-control" formControlName="email" placeholder="Enter email">
+                    <div class="text-danger mt-1" *ngIf="email.invalid && (email.dirty || email.touched)">
+                        <small *ngIf="email.errors?.['required']">Email is required.</small>
+                        <small *ngIf="email.errors?.['email']">Invalid email format.</small>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="phoneNumber" placeholder="Enter phone number">
+                    <input type="text" class="form-control" formControlName="phoneNumber" placeholder="Enter phone number" maxlength="11">
+                    <div class="text-danger mt-1" *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched)">
+                        <small *ngIf="phoneNumber.errors?.['required']">Phone number is required.</small>
+                        <small *ngIf="phoneNumber.errors?.['minlength'] || phoneNumber.errors?.['maxlength']">Phone number must be exactly 11 digits.</small>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Password <span class="text-danger">*</span></label>
                     <input type="password" class="form-control" formControlName="password" placeholder="Enter password">
+                    <div class="text-danger mt-1" *ngIf="password.invalid && (password.dirty || password.touched)">
+                        <small *ngIf="password.errors?.['required']">Password is required.</small>
+                    </div>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Supervisor Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="supervisorName" placeholder="Enter supervisor name">
-                </div>
+                
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Hourly Rate <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" formControlName="hourlyRate" placeholder="0">
+                    <div class="text-danger mt-1" *ngIf="hourlyRate.invalid && (hourlyRate.dirty || hourlyRate.touched)">
+                        <small *ngIf="hourlyRate.errors?.['required']">Hourly rate is required.</small>
+                        <small *ngIf="hourlyRate.errors?.['min']">Hourly rate must be at least 0.</small>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Currency <span class="text-danger">*</span></label>
-                    <p-select [options]="[{label: 'USD', value: 1}, {label: 'EGP', value: 2}]" 
+                    <p-select [options]="currencyOptions" 
                         formControlName="currency" optionLabel="label" optionValue="value" 
                         placeholder="Select Currency" class="form-control w-100"></p-select>
+                    <div class="text-danger mt-1" *ngIf="currency.invalid && (currency.dirty || currency.touched)">
+                        <small *ngIf="currency.errors?.['required']">Currency is required.</small>
+                    </div>
                 </div>
                 <div class="col-12 text-end mt-3">
                     <button type="button" class="btn btn-light me-2" data-bs-dismiss="offcanvas">Cancel</button>
-                    <button type="submit" class="btn btn-primary" [disabled]="supervisorForm.invalid">Save Supervisor</button>
+                    <button type="submit" class="btn btn-primary" >Save Supervisor</button>
                 </div>
             </div>
         </form>
@@ -152,28 +168,43 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Full Name <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" formControlName="fullName">
+                    <div class="text-danger mt-1" *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)">
+                        <small *ngIf="fullName.errors?.['required']">Full name is required.</small>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Email <span class="text-danger">*</span></label>
                     <input type="email" class="form-control" formControlName="email">
+                    <div class="text-danger mt-1" *ngIf="email.invalid && (email.dirty || email.touched)">
+                        <small *ngIf="email.errors?.['required']">Email is required.</small>
+                        <small *ngIf="email.errors?.['email']">Invalid email format.</small>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="phoneNumber">
+                    <input type="text" class="form-control" formControlName="phoneNumber" maxlength="11">
+                    <div class="text-danger mt-1" *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched)">
+                        <small *ngIf="phoneNumber.errors?.['required']">Phone number is required.</small>
+                        <small *ngIf="phoneNumber.errors?.['minlength'] || phoneNumber.errors?.['maxlength']">Phone number must be exactly 11 digits.</small>
+                    </div>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Supervisor Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" formControlName="supervisorName">
-                </div>
+                
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Hourly Rate <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" formControlName="hourlyRate">
+                    <div class="text-danger mt-1" *ngIf="hourlyRate.invalid && (hourlyRate.dirty || hourlyRate.touched)">
+                        <small *ngIf="hourlyRate.errors?.['required']">Hourly rate is required.</small>
+                        <small *ngIf="hourlyRate.errors?.['min']">Hourly rate must be at least 0.</small>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Currency <span class="text-danger">*</span></label>
-                    <p-select [options]="[{label: 'USD', value: 1}, {label: 'EGP', value: 2}]" 
+                    <p-select [options]="currencyOptions" 
                         formControlName="currency" optionLabel="label" optionValue="value" 
                         class="form-control w-100"></p-select>
+                    <div class="text-danger mt-1" *ngIf="currency.invalid && (currency.dirty || currency.touched)">
+                        <small *ngIf="currency.errors?.['required']">Currency is required.</small>
+                    </div>
                 </div>
                 <div class="col-12 text-end mt-3">
                     <button type="button" class="btn btn-light me-2" data-bs-dismiss="offcanvas">Cancel</button>

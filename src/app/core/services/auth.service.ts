@@ -21,11 +21,11 @@ export class AuthService {
   hide() {
     this.loadingSubject.next(false);
   }
-  login(userName: string, password: string): Observable<any> {
+  login(email: string, password: string): Observable<any> {
     const body: ILogin = {
-      userName,
+      email,
       password
-    }; return this.http.post(`${this.apiUrl}Login`, body, {
+    }; return this.http.post(`${this.apiUrl}login`, body, {
       headers: { 'Skip-Interceptor': 'true' }
     });
   }

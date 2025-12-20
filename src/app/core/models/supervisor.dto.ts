@@ -3,7 +3,6 @@ export interface IGetSupervisor {
   fullName: string;
   email: string;
   phoneNumber: string;
-  supervisorName: string;
   hourlyRate: number;
   currency: number;
 }
@@ -13,7 +12,6 @@ export interface IAddSupervisor {
   email: string;
   phoneNumber: string;
   password: string;
-  supervisorName: string;
   hourlyRate: number;
   currency: number;
 }

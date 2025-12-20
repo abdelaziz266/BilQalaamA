@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     // ✅ إنشاء الـ FormGroup
     this.loginForm = this.fb.group({
-      userName: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
+      userName: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(5)]],
     });
 
@@ -57,11 +57,10 @@ export class LoginComponent implements OnInit {
   this.authService.login(userNameValue, this.password.value!).subscribe({
     next: (res: IApiResponse<ILoginResponse>) => {
       if (res.data?.token) {
-        debugger;
         this.tokenService.saveToken(res.data.token);
 
         // ✅ بعد حفظ التوكن يروح على صفحة الشركات
-        this.router.navigate(['/company']);
+        this.router.navigate(['/Supervisors']);
       }
 
       this.loading = false;

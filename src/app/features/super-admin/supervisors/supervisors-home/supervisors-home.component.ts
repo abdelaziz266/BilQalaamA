@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { CustomPaginationComponent, PageChangeEvent } from '../../../../shared/components/custom-pagination/custom-pagination.component';
 import { IGetSupervisor, IAddSupervisor, IUpdateSupervisor } from '../../../../core/models/supervisor.dto';
+import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currency.enum';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
 import { SharedService } from '../../../../core/services/shared.service';
 import { ToastrService } from 'ngx-toastr';
@@ -25,6 +26,12 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   supervisorForm!: FormGroup;
   selectedSupervisorId: number | null = null;
   isEditMode: boolean = false;
+  currencyOptions = CurrencyOptions;
+  currencyLabels = CurrencyLabels;
+
+  getCurrencyLabel(currency: number): string {
+    return (this.currencyLabels as any)[currency] || 'Unknown';
+  }
 
   // Pagination
   rowCount = 10;
@@ -48,12 +55,36 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
     this.supervisorForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required],
+      phoneNumber: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
       password: ['', this.isEditMode ? [] : [Validators.required]],
       supervisorName: ['', Validators.required],
       hourlyRate: [0, [Validators.required, Validators.min(0)]],
       currency: [1, Validators.required]
     });
+  }
+
+  get fullName() {
+    return this.supervisorForm.get('fullName')!;
+  }
+
+  get email() {
+    return this.supervisorForm.get('email')!;
+  }
+
+  get phoneNumber() {
+    return this.supervisorForm.get('phoneNumber')!;
+  }
+
+  get password() {
+    return this.supervisorForm.get('password')!;
+  }
+
+  get hourlyRate() {
+    return this.supervisorForm.get('hourlyRate')!;
+  }
+
+  get currency() {
+    return this.supervisorForm.get('currency')!;
   }
 
   ngAfterViewInit(): void {
@@ -99,7 +130,6 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
       email: '',
       phoneNumber: '',
       password: '',
-      supervisorName: '',
       hourlyRate: 0,
       currency: 1
     });
@@ -114,7 +144,6 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
         fullName: supervisor.fullName,
         email: supervisor.email,
         phoneNumber: supervisor.phoneNumber,
-        supervisorName: supervisor.supervisorName,
         hourlyRate: supervisor.hourlyRate,
         currency: supervisor.currency,
         password: '' // Password usually not returned or edited this way
@@ -142,8 +171,6 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.toastr.success('Supervisor updated successfully');
           this.getSupervisors();
-          // Close offcanvas using data-bs-dismiss or similar if needed, 
-          // but usually handled by the button in HTML
         },
         error: (err) => {
           this.toastr.error('Update failed');
