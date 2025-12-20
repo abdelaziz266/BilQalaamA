@@ -437,6 +437,15 @@ export class DataService {
           route: routes.supervisors,
           base: 'Supervisors',
           subRoutes: [],
+        },
+        {
+          menuValue: 'المعلمين',
+          icon: 'school',
+          hasSubRoute: false,
+          showSubRoute: false,
+          route: routes.teachers,
+          base: 'Teachers',
+          subRoutes: [],
         }
       ],
     },

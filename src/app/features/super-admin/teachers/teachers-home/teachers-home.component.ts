@@ -5,26 +5,28 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { CustomPaginationComponent, PageChangeEvent } from '../../../../shared/components/custom-pagination/custom-pagination.component';
+import { ITeacherResponse } from '../../../../core/models/teacher.dto';
 import { IGetSupervisor } from '../../../../core/models/supervisor.dto';
 import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currency.enum';
+import { TeacherService } from '../../../../core/services/teacher.service';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
-import { SharedService } from '../../../../core/services/shared.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-supervisors-home',
+  selector: 'app-teachers-home',
   standalone: true,
   imports: [ReactiveFormsModule, SelectModule, FormsModule, CommonModule, RouterLink, CustomPaginationComponent, MatSortModule],
-  templateUrl: './supervisors-home.component.html',
-  styleUrl: './supervisors-home.component.scss'
+  templateUrl: './teachers-home.component.html',
+  styleUrls: ['./teachers-home.component.scss']
 })
-export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
+export class TeachersHomeComponent implements OnInit, AfterViewInit {
   @ViewChild('offcanvasAdd', { static: false }) offcanvasAdd!: ElementRef;
   @ViewChild('offcanvasEdit', { static: false }) offcanvasEdit!: ElementRef;
 
+  teachers: ITeacherResponse[] = [];
   supervisors: IGetSupervisor[] = [];
-  supervisorForm!: FormGroup;
-  selectedSupervisorId: number | null = null;
+  teacherForm!: FormGroup;
+  selectedTeacherId: number | null = null;
   isEditMode: boolean = false;
   currencyOptions = CurrencyOptions;
   currencyLabels = CurrencyLabels;
@@ -50,24 +52,26 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   totalCount = 0;
 
   constructor(
+    private teacherService: TeacherService,
     private supervisorService: SupervisorService,
     private fb: FormBuilder,
-    private sharedService: SharedService,
     private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
+    this.getTeachers();
     this.getSupervisors();
     this.initForm();
   }
 
   initForm(): void {
-    this.supervisorForm = this.fb.group({
-      fullName: ['', Validators.required],
+    this.teacherForm = this.fb.group({
+      fullName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/)]],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^01[012][0-9]{8}$/)]],
-      password: [null, this.isEditMode ? [] : [Validators.required]],
+      password: ['', this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', this.isEditMode ? [] : [Validators.required]],
+      supervisorId: [null],
       hourlyRate: [0, [Validators.required, Validators.min(0.01)]],
       currency: [1, Validators.required]
     }, { validators: this.passwordMatchValidator });
@@ -92,60 +96,45 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
     return null;
   }
 
-  get fullName() {
-    return this.supervisorForm.get('fullName')!;
-  }
-
-  get email() {
-    return this.supervisorForm.get('email')!;
-  }
-
-  get phoneNumber() {
-    return this.supervisorForm.get('phoneNumber')!;
-  }
-
-  get password() {
-    return this.supervisorForm.get('password')!;
-  }
-
-  get confirmPassword() {
-    return this.supervisorForm.get('confirmPassword')!;
-  }
-
-  get hourlyRate() {
-    return this.supervisorForm.get('hourlyRate')!;
-  }
-
-  get currency() {
-    return this.supervisorForm.get('currency')!;
-  }
+  // Getters for form controls
+  get fullName() { return this.teacherForm.get('fullName')!; }
+  get email() { return this.teacherForm.get('email')!; }
+  get phoneNumber() { return this.teacherForm.get('phoneNumber')!; }
+  get password() { return this.teacherForm.get('password')!; }
+  get confirmPassword() { return this.teacherForm.get('confirmPassword')!; }
+  get hourlyRate() { return this.teacherForm.get('hourlyRate')!; }
+  get currency() { return this.teacherForm.get('currency')!; }
+  get supervisorId() { return this.teacherForm.get('supervisorId')!; }
 
   ngAfterViewInit(): void {
-    if (this.offcanvasAdd && this.offcanvasAdd.nativeElement) {
-      this.offcanvasAdd.nativeElement.addEventListener('hidden.bs.offcanvas', () => {
-        this.resetForm();
-      });
+    if (this.offcanvasAdd?.nativeElement) {
+      this.offcanvasAdd.nativeElement.addEventListener('hidden.bs.offcanvas', () => this.resetForm());
     }
-
-    if (this.offcanvasEdit && this.offcanvasEdit.nativeElement) {
-      this.offcanvasEdit.nativeElement.addEventListener('hidden.bs.offcanvas', () => {
-        this.resetForm();
-      });
+    if (this.offcanvasEdit?.nativeElement) {
+      this.offcanvasEdit.nativeElement.addEventListener('hidden.bs.offcanvas', () => this.resetForm());
     }
   }
 
-  getSupervisors(): void {
-    this.supervisorService.GetSupervisors(this.pageNumber=1, this.rowCount=10).subscribe({
+  getTeachers(): void {
+    this.teacherService.getTeachers(this.pageNumber, this.rowCount).subscribe({
       next: (res) => {
         if (res.status === 200) {
-          this.supervisors = res.data.items;
+          this.teachers = res.data.items;
           this.pagesCount = res.data.pagesCount;
           this.totalCount = res.data.totalCount;
         }
       },
-      error: (err) => {
-        const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
-        this.toastr.error(errorMsg);
+      error: (err) => this.handleError(err)
+    });
+  }
+
+  getSupervisors(): void {
+    // Fetching a large number to get all supervisors for the dropdown
+    this.supervisorService.GetSupervisors(1, 1000).subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.supervisors = res.data.items;
+        }
       }
     });
   }
@@ -153,90 +142,82 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   onPageChange(event: PageChangeEvent): void {
     this.pageNumber = event.pageNumber;
     this.rowCount = event.rowCount;
-    this.getSupervisors();
+    this.getTeachers();
   }
 
   resetForm(): void {
     this.isEditMode = false;
-    this.selectedSupervisorId = null;
+    this.selectedTeacherId = null;
     this.passwordVisible = false;
     this.confirmPasswordVisible = false;
-    this.supervisorForm.reset({
+    this.teacherForm.reset({
       fullName: '',
       email: '',
       phoneNumber: '',
       password: '',
       confirmPassword: '',
+      supervisorId: null,
       hourlyRate: 0,
       currency: 1
     });
     
-    // Restore validators for Add mode
-    this.supervisorForm.get('password')?.setValidators([Validators.required]);
-    this.supervisorForm.get('password')?.updateValueAndValidity();
-    this.supervisorForm.get('confirmPassword')?.setValidators([Validators.required]);
-    this.supervisorForm.get('confirmPassword')?.updateValueAndValidity();
+    this.teacherForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.teacherForm.get('password')?.updateValueAndValidity();
+    this.teacherForm.get('confirmPassword')?.setValidators([Validators.required]);
+    this.teacherForm.get('confirmPassword')?.updateValueAndValidity();
   }
 
   openEditModal(id: number): void {
     this.isEditMode = true;
-    this.selectedSupervisorId = id;
-    const supervisor = this.supervisors.find(s => s.id === id);
-    if (supervisor) {
-      this.supervisorForm.patchValue({
-        fullName: supervisor.supervisorName,
-        email: supervisor.email,
-        phoneNumber: supervisor.phoneNumber,
-        hourlyRate: supervisor.hourlyRate,
-        currency: supervisor.currency,
+    this.selectedTeacherId = id;
+    const teacher = this.teachers.find(t => t.id === id);
+    if (teacher) {
+      this.teacherForm.patchValue({
+        fullName: teacher.teacherName,
+        email: teacher.email,
+        phoneNumber: teacher.phoneNumber,
+        supervisorId: teacher.supervisorId,
+        hourlyRate: teacher.hourlyRate,
+        currency: teacher.currency,
         password: '',
         confirmPassword: ''
       });
-      // Password is not required when editing
-      this.supervisorForm.get('password')?.setValidators([]);
-      this.supervisorForm.get('password')?.updateValueAndValidity();
-      this.supervisorForm.get('confirmPassword')?.setValidators([]);
-      this.supervisorForm.get('confirmPassword')?.updateValueAndValidity();
+      this.teacherForm.get('password')?.setValidators([Validators.minLength(6)]);
+      this.teacherForm.get('password')?.updateValueAndValidity();
+      this.teacherForm.get('confirmPassword')?.setValidators([]);
+      this.teacherForm.get('confirmPassword')?.updateValueAndValidity();
     }
   }
 
   openDeleteModal(id: number): void {
-    this.selectedSupervisorId = id;
+    this.selectedTeacherId = id;
   }
 
   submitForm(): void {
-    if (this.supervisorForm.invalid) {
-      this.supervisorForm.markAllAsTouched();
+    if (this.teacherForm.invalid) {
+      this.teacherForm.markAllAsTouched();
       return;
     }
 
-    const { confirmPassword, ...data } = this.supervisorForm.value;
-    if (this.isEditMode && this.selectedSupervisorId) {
-      if (data.password === null || data.password === '') 
-        delete data.password;
-      this.supervisorService.updateSupervisor(this.selectedSupervisorId, { ...data, id: this.selectedSupervisorId }).subscribe({
+    const { confirmPassword, ...data } = this.teacherForm.value;
+    if (this.isEditMode && this.selectedTeacherId) {
+      if (!data.password) delete data.password;
+      this.teacherService.updateTeacher(this.selectedTeacherId, { ...data, id: this.selectedTeacherId }).subscribe({
         next: (res) => {
           this.toastr.success(res.message);
-          this.getSupervisors();
+          this.getTeachers();
           this.closeOffcanvas();
         },
-        error: (err) => {
-          
-          const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
-          this.toastr.error(errorMsg);
-        }
+        error: (err) => this.handleError(err)
       });
     } else {
-      this.supervisorService.createSupervisor(data).subscribe({
+      this.teacherService.createTeacher(data).subscribe({
         next: (res) => {
           this.toastr.success(res.message);
-          this.getSupervisors();
+          this.getTeachers();
           this.closeOffcanvas();
         },
-        error: (err) => {
-          const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
-          this.toastr.error(errorMsg);
-        }
+        error: (err) => this.handleError(err)
       });
     }
   }
@@ -248,19 +229,21 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
     (window as any).bootstrap?.Offcanvas.getOrCreateInstance(offcanvasEdit)?.hide();
   }
 
-  onDeleteSupervisor(): void {
-    if (this.selectedSupervisorId) {
-      this.supervisorService.deleteSupervisor(this.selectedSupervisorId).subscribe({
+  onDeleteTeacher(): void {
+    if (this.selectedTeacherId) {
+      this.teacherService.deleteTeacher(this.selectedTeacherId).subscribe({
         next: (res) => {
           this.toastr.success(res.message);
-          this.getSupervisors();
+          this.getTeachers();
         },
-        error: (err) => {
-          const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
-          this.toastr.error(errorMsg);
-        }
+        error: (err) => this.handleError(err)
       });
     }
+  }
+
+  private handleError(err: any): void {
+    const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
+    this.toastr.error(errorMsg);
   }
 
   sortData(sort: Sort): void {

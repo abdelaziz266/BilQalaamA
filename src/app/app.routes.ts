@@ -28,6 +28,11 @@ export const routes: Routes = [
             path: 'Supervisors',
             loadComponent: () => import('./features/super-admin/supervisors/supervisors-home/supervisors-home.component').then(m => m.SupervisorsHomeComponent),
             canActivate: [AuthGuard]
+          },
+          {
+            path: 'Teachers',
+            loadComponent: () => import('./features/super-admin/teachers/teachers-home/teachers-home.component').then(m => m.TeachersHomeComponent),
+            canActivate: [AuthGuard]
           }
         ]
       }

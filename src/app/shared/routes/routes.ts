@@ -17,4 +17,5 @@ export const routes={
   serviceCategory:'/ServiceCategory',
   serviceCompanies: '/ServiceCompanies/:serviceId',
   supervisors: '/Supervisors',
+  teachers: '/Teachers',
 };
