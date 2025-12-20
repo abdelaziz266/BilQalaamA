@@ -1,0 +1,66 @@
+<div class="d-flex align-items-center my-3 flex-wrap gap-2">
+  <!-- Row Count Select - Left -->
+  <div class="d-flex align-items-center gap-2" style="flex: 1;">
+    <label class="mb-0 text-nowrap">Rows:</label>
+    <p-select 
+      [options]="rowCountOptions" 
+      [(ngModel)]="rowCountInput" 
+      (onChange)="onRowCountChange()"
+      optionLabel="label" 
+      optionValue="value"
+      placeholder="Select"
+      class="form-control"
+      [style]="{'width': '100px'}"></p-select>
+  </div>
+
+  <!-- Pagination - Center -->
+  <nav *ngIf="pagesCount > 1">
+    <ul class="pagination pagination-rounded pagination-boxed mb-0 flex-wrap gap-lg-0 gap-md-0 gap-1">
+      <!-- First Page -->
+      <li class="page-item" [ngClass]="{ disabled: currentPage === 1 }">
+        <a class="page-link" href="javascript:void(0);" aria-label="First" (click)="goToFirst()">
+          <span aria-hidden="true">&laquo;&laquo;</span>
+        </a>
+      </li>
+      
+      <!-- Previous Page -->
+      <li class="page-item" [ngClass]="{ disabled: currentPage === 1 }">
+        <a class="page-link" href="javascript:void(0);" aria-label="Previous" (click)="previous()">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      <!-- Page before current -->
+      <li class="page-item" *ngIf="currentPage > 1">
+        <a class="page-link" href="javascript:void(0);" (click)="goToPage(currentPage - 1)">{{ currentPage - 1 }}</a>
+      </li>
+
+      <!-- Current Page -->
+      <li class="page-item active">
+        <a class="page-link" href="javascript:void(0);">{{ currentPage }}</a>
+      </li>
+
+      <!-- Page after current -->
+      <li class="page-item" *ngIf="currentPage < pagesCount">
+        <a class="page-link" href="javascript:void(0);" (click)="goToPage(currentPage + 1)">{{ currentPage + 1 }}</a>
+      </li>
+
+      <!-- Next Page -->
+      <li class="page-item" [ngClass]="{ disabled: currentPage === pagesCount }">
+        <a class="page-link" href="javascript:void(0);" aria-label="Next" (click)="next()">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      
+      <!-- Last Page -->
+      <li class="page-item" [ngClass]="{ disabled: currentPage === pagesCount }">
+        <a class="page-link" href="javascript:void(0);" aria-label="Last" (click)="goToLast()">
+          <span aria-hidden="true">&raquo;&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Empty div for balance - Right -->
+  <div style="flex: 1;"></div>
+</div>

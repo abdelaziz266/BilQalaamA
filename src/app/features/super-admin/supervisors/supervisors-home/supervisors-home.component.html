@@ -1,0 +1,206 @@
+<div class="content pb-0">
+    <!-- Page Header -->
+    <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
+        <div>
+            <h4 class="mb-1">SUPERVISORS <span class="badge badge-soft-primary ms-2">{{totalCount}}</span></h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Supervisors</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="gap-2 d-flex align-items-center flex-wrap">
+            <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add">
+                <i class="ti ti-square-rounded-plus-filled me-1"></i>Add New Supervisor
+            </button>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card border-0 rounded-0">
+        <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+            <div class="input-icon input-icon-start position-relative">
+                <span class="input-icon-addon text-dark"><i class="ti ti-search"></i></span>
+                <input type="search" class="form-control" placeholder="Search">
+            </div>
+        </div>
+        <div class="card-body d-flex flex-column">
+            <!-- No Data State -->
+            <div *ngIf="supervisors.length === 0" class="text-center py-5">
+                <i class="ti ti-database-off fs-1 text-muted"></i>
+                <p class="mt-2 text-muted">No supervisors found</p>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive table-container" *ngIf="supervisors.length > 0">
+                <table class="table table-striped mb-0" matSort (matSortChange)="sortData($event)">
+                    <thead>
+                        <tr>
+                            <th mat-sort-header="fullName">Full Name</th>
+                            <th mat-sort-header="email">Email</th>
+                            <th mat-sort-header="phoneNumber">Phone</th>
+                            <th mat-sort-header="supervisorName">Supervisor Name</th>
+                            <th mat-sort-header="hourlyRate">Hourly Rate</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let data of supervisors">
+                            <td>{{data.fullName}}</td>
+                            <td>{{data.email}}</td>
+                            <td>{{data.phoneNumber}}</td>
+                            <td>{{data.supervisorName}}</td>
+                            <td>{{data.hourlyRate}} {{data.currency === 1 ? 'USD' : 'EGP'}}</td>
+                            <td>
+                                <div class="dropdown table-action">
+                                    <a href="javascript:void(0);" class="action-icon btn btn-xs shadow btn-icon btn-outline-light"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti ti-dots-vertical"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="offcanvas"
+                                            data-bs-target="#offcanvas_edit" (click)="openEditModal(data.id)">
+                                            <i class="ti ti-edit text-blue me-1"></i>Edit
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal"
+                                            data-bs-target="#delete_supervisor" (click)="openDeleteModal(data.id)">
+                                            <i class="ti ti-trash text-blue me-1"></i>Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <app-custom-pagination 
+                [rowCount]="rowCount" 
+                [pageNumber]="pageNumber" 
+                [pagesCount]="pagesCount"
+                (pageChange)="onPageChange($event)">
+            </app-custom-pagination>
+        </div>
+    </div>
+</div>
+
+<!-- Add Supervisor Offcanvas -->
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcanvas_add" #offcanvasAdd>
+    <div class="offcanvas-header border-bottom">
+        <h5 class="fw-semibold">Add New Supervisor</h5>
+        <button type="button" class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
+            data-bs-dismiss="offcanvas" aria-label="Close">
+            <i class="ti ti-x"></i>
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <form [formGroup]="supervisorForm" (ngSubmit)="submitForm()">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="fullName" placeholder="Enter full name">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" formControlName="email" placeholder="Enter email">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="phoneNumber" placeholder="Enter phone number">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" formControlName="password" placeholder="Enter password">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Supervisor Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="supervisorName" placeholder="Enter supervisor name">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hourly Rate <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" formControlName="hourlyRate" placeholder="0">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Currency <span class="text-danger">*</span></label>
+                    <p-select [options]="[{label: 'USD', value: 1}, {label: 'EGP', value: 2}]" 
+                        formControlName="currency" optionLabel="label" optionValue="value" 
+                        placeholder="Select Currency" class="form-control w-100"></p-select>
+                </div>
+                <div class="col-12 text-end mt-3">
+                    <button type="button" class="btn btn-light me-2" data-bs-dismiss="offcanvas">Cancel</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="supervisorForm.invalid">Save Supervisor</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Supervisor Offcanvas -->
+<div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcanvas_edit" #offcanvasEdit>
+    <div class="offcanvas-header border-bottom">
+        <h5 class="fw-semibold">Edit Supervisor</h5>
+        <button type="button" class="btn-close custom-btn-close border p-1 me-0 d-flex align-items-center justify-content-center rounded-circle"
+            data-bs-dismiss="offcanvas" aria-label="Close">
+            <i class="ti ti-x"></i>
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <form [formGroup]="supervisorForm" (ngSubmit)="submitForm()">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="fullName">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" formControlName="email">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="phoneNumber">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Supervisor Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" formControlName="supervisorName">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hourly Rate <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" formControlName="hourlyRate">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Currency <span class="text-danger">*</span></label>
+                    <p-select [options]="[{label: 'USD', value: 1}, {label: 'EGP', value: 2}]" 
+                        formControlName="currency" optionLabel="label" optionValue="value" 
+                        class="form-control w-100"></p-select>
+                </div>
+                <div class="col-12 text-end mt-3">
+                    <button type="button" class="btn btn-light me-2" data-bs-dismiss="offcanvas">Cancel</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="supervisorForm.invalid">Update Supervisor</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="delete_supervisor">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3">
+                    <span class="avatar avatar-xl badge-soft-danger border-0 text-danger rounded-circle">
+                        <i class="ti ti-trash fs-24"></i>
+                    </span>
+                </div>
+                <h5 class="mb-1">Delete Confirmation</h5>
+                <p class="mb-3">Are you sure you want to remove this supervisor?</p>
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-sm btn-light me-2 w-100" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary w-100" data-bs-dismiss="modal" (click)="onDeleteSupervisor()">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

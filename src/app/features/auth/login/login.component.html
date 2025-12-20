@@ -1,0 +1,64 @@
+<div class="account-page bg-white" dir="rtl">
+  <div class="main-wrapper">
+    <div class="overflow-hidden p-3 acc-vh">
+      <div class="row vh-100 w-100 g-0">
+        <div class="col-lg-6 d-flex align-items-center justify-content-center vh-100">
+          <div class="col-md-10">
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-100 p-4" novalidate>
+              
+              <div class="text-center mb-4 auth-logo">
+                <img src="assets/images/BilQalaamIcon.jpeg" class="img-fluid" alt="Logo">
+              </div>
+
+              <!-- اسم المستخدم -->
+              <div class="mb-3">
+                <label class="form-label">اسم المستخدم</label>
+                <div class="input-group input-group-flat">
+                  <span class="input-group-text">
+                    <i class="ti ti-user"></i>
+                  </span>
+                  <input type="text" formControlName="userName" class="form-control" maxlength="11">
+                </div>
+                <span class="text-danger" *ngIf="userName.invalid && (userName.dirty || userName.touched)">
+                  <span *ngIf="userName.errors?.['required']">اسم المستخدم مطلوب.</span>
+                  <span *ngIf="userName.errors?.['minlength'] || userName.errors?.['maxlength']">
+                    اسم المستخدم يجب أن يكون 11 رقم بالضبط.
+                  </span>
+                </span>
+              </div>
+
+              <!-- كلمة المرور -->
+              <div class="mb-3">
+                <label class="form-label">كلمة المرور</label>
+                <div class="input-group input-group-flat pass-group">
+                  <span class="input-group-text toggle-password" (click)="togglePassword()" tabindex="0">
+                    <i class="ti" [ngClass]="passwordVisible ? 'ti-eye' : 'ti-eye-off'"></i>
+                  </span>
+                  <input [type]="passwordVisible ? 'text' : 'password'" 
+                         formControlName="password" 
+                         class="form-control">
+                </div>
+                <span class="text-danger" *ngIf="password.invalid && (password.dirty || password.touched)">
+                  <span *ngIf="password.errors?.['required']">كلمة المرور مطلوبة.</span>
+                  <span *ngIf="password.errors?.['minlength']">
+                    كلمة المرور يجب أن تكون 5 أحرف على الأقل.
+                  </span>
+                </span>
+              </div>
+
+              <!-- تسجيل الدخول -->
+              <div class="mb-3">
+                <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
+                  {{ loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول' }}
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+        <div class="col-lg-6 account-bg-01"></div>
+      </div>
+    </div>
+  </div>
+</div>
