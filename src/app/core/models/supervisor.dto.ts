@@ -1,6 +1,6 @@
 export interface IGetSupervisor {
   id: number;
-  fullName: string;
+  supervisorName: string;
   email: string;
   phoneNumber: string;
   hourlyRate: number;

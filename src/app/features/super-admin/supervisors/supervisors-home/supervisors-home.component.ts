@@ -54,10 +54,9 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   initForm(): void {
     this.supervisorForm = this.fb.group({
       fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/)]],
       phoneNumber: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
       password: ['', this.isEditMode ? [] : [Validators.required]],
-      supervisorName: ['', Validators.required],
       hourlyRate: [0, [Validators.required, Validators.min(0)]],
       currency: [1, Validators.required]
     });
@@ -102,16 +101,18 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   }
 
   getSupervisors(): void {
-    this.supervisorService.GetSupervisors(this.pageNumber, this.rowCount).subscribe({
+    this.supervisorService.GetSupervisors(this.pageNumber=1, this.rowCount=10).subscribe({
       next: (res) => {
+        debugger
         if (res.status === 200) {
-          this.supervisors = res.data.data;
+          this.supervisors = res.data.items;
           this.pagesCount = res.data.pagesCount;
-          this.totalCount = res.data.total;
+          this.totalCount = res.data.totalCount;
         }
       },
       error: (err) => {
-        this.toastr.error('Failed to load supervisors');
+        debugger
+        this.toastr.error(err.message);
       }
     });
   }
@@ -141,7 +142,7 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
     const supervisor = this.supervisors.find(s => s.id === id);
     if (supervisor) {
       this.supervisorForm.patchValue({
-        fullName: supervisor.fullName,
+        fullName: supervisor.supervisorName,
         email: supervisor.email,
         phoneNumber: supervisor.phoneNumber,
         hourlyRate: supervisor.hourlyRate,
@@ -159,45 +160,54 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   }
 
   submitForm(): void {
+    debugger;
     if (this.supervisorForm.invalid) {
       this.supervisorForm.markAllAsTouched();
       return;
     }
 
     const data = this.supervisorForm.value;
-
     if (this.isEditMode && this.selectedSupervisorId) {
       this.supervisorService.updateSupervisor(this.selectedSupervisorId, { ...data, id: this.selectedSupervisorId }).subscribe({
         next: (res) => {
-          this.toastr.success('Supervisor updated successfully');
+          this.toastr.success(res.message);
           this.getSupervisors();
+          this.closeOffcanvas();
         },
         error: (err) => {
-          this.toastr.error('Update failed');
+          this.toastr.error(err.message);
         }
       });
     } else {
       this.supervisorService.createSupervisor(data).subscribe({
         next: (res) => {
-          this.toastr.success('Supervisor created successfully');
+          this.toastr.success(res.message);
           this.getSupervisors();
+          this.closeOffcanvas();
         },
         error: (err) => {
-          this.toastr.error('Creation failed');
+          this.toastr.error(err.message);
         }
       });
     }
+  }
+
+  closeOffcanvas(): void {
+    const offcanvasAdd = this.offcanvasAdd.nativeElement;
+    const offcanvasEdit = this.offcanvasEdit.nativeElement;
+    (window as any).bootstrap?.Offcanvas.getOrCreateInstance(offcanvasAdd)?.hide();
+    (window as any).bootstrap?.Offcanvas.getOrCreateInstance(offcanvasEdit)?.hide();
   }
 
   onDeleteSupervisor(): void {
     if (this.selectedSupervisorId) {
       this.supervisorService.deleteSupervisor(this.selectedSupervisorId).subscribe({
         next: (res) => {
-          this.toastr.success('Supervisor deleted successfully');
+          this.toastr.success(res.message);
           this.getSupervisors();
         },
         error: (err) => {
-          this.toastr.error('Delete failed');
+          this.toastr.error(err.message);
         }
       });
     }
