@@ -43,6 +43,11 @@ export const routes: Routes = [
             path: 'Students',
             loadComponent: () => import('./features/super-admin/students/students-home/students-home.component').then(m => m.StudentsHomeComponent),
             canActivate: [AuthGuard]
+          },
+          {
+            path: 'Lessons',
+            loadComponent: () => import('./features/super-admin/lessons/lessons-home/lessons-home.component').then(m => m.LessonsHomeComponent),
+            canActivate: [AuthGuard]
           }
         ]
       }

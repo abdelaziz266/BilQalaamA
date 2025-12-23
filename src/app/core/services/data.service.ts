@@ -464,6 +464,15 @@ export class DataService {
           route: routes.students,
           base: 'Students',
           subRoutes: [],
+        },
+        {
+          menuValue: 'الدروس',
+          icon: 'chalkboard',
+          hasSubRoute: false,
+          showSubRoute: false,
+          route: routes.lessons,
+          base: 'Lessons',
+          subRoutes: [],
         }
       ],
     },

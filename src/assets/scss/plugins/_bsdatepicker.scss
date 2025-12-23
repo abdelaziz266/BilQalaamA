@@ -1,0 +1,96 @@
+// ngx-bootstrap datepicker custom styles
+$datepicker-color: #5da3a2;
+
+.bs-datepicker {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  border: none;
+}
+
+.bs-datepicker-head {
+  background-color: $datepicker-color !important;
+  border-radius: 0.5rem 0.5rem 0 0;
+  
+  button {
+    color: #fff !important;
+    
+    &:hover {
+      background-color: darken($datepicker-color, 10%) !important;
+    }
+  }
+}
+
+.bs-datepicker-body {
+  border: none;
+  padding: 0.5rem;
+  
+  table {
+    th {
+      color: $datepicker-color;
+      font-weight: 600;
+    }
+    
+    td {
+      span {
+        &.selected,
+        &.is-highlighted {
+          background-color: $datepicker-color !important;
+          color: #fff !important;
+        }
+        
+        &:hover {
+          background-color: rgba($datepicker-color, 0.2);
+        }
+        
+        &.is-other-month {
+          color: #ccc;
+        }
+      }
+    }
+  }
+}
+
+.bs-datepicker-container {
+  padding: 0;
+}
+
+// Today button
+.bs-datepicker-predefined-btns {
+  button {
+    background-color: $datepicker-color !important;
+    border: none;
+    
+    &:hover {
+      background-color: darken($datepicker-color, 10%) !important;
+    }
+  }
+}
+
+// Week numbers
+.bs-datepicker-body table td span.week {
+  color: $datepicker-color;
+}
+
+// Navigation arrows
+.bs-datepicker-head button.previous,
+.bs-datepicker-head button.next {
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+  }
+}
+
+// Current day highlight
+.bs-datepicker-body table td.week span {
+  color: $datepicker-color;
+}
+
+// Theme adjustments
+.theme-green .bs-datepicker-head,
+.theme-default .bs-datepicker-head {
+  background-color: $datepicker-color !important;
+}
+
+.theme-green .bs-datepicker-body table td span.selected,
+.theme-default .bs-datepicker-body table td span.selected {
+  background-color: $datepicker-color !important;
+}

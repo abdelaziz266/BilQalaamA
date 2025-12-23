@@ -20,4 +20,5 @@ export const routes={
   teachers: '/Teachers',
   families: '/Families',
   students: '/Students',
+  lessons: '/Lessons',
 };
