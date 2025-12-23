@@ -1,0 +1,121 @@
+// PrimeNG Select & MultiSelect Styles
+
+// p-select and p-multiselect base styles
+.p-select,
+.p-multiselect {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 6px !important;
+    box-shadow: var(--box-shadow) !important;
+}
+
+// p-select dropdown styles
+.p-select-overlay {
+    background-color: #fff !important;
+    z-index: 9999 !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 6px !important;
+    box-shadow: var(--box-shadow) !important;
+}
+
+.p-select-list-container {
+    padding: 8px !important;
+}
+
+.p-select-list {
+    background-color: #fff !important;
+}
+
+.p-select-option {
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+}
+
+.p-select-option:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.p-select-filter-container {
+    padding: 8px !important;
+}
+
+.p-select-filter {
+    width: 100% !important;
+    padding: 8px 12px !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 6px !important;
+}
+
+// p-multiselect dropdown styles
+.p-multiselect-overlay {
+    background-color: #fff !important;
+    z-index: 9999 !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 6px !important;
+    box-shadow: var(--box-shadow) !important;
+}
+
+.p-multiselect-list-container {
+    background-color: #fff !important;
+    padding: 8px !important;
+}
+
+.p-multiselect-list {
+    background-color: #fff !important;
+}
+
+.p-multiselect-option {
+    background-color: #fff !important;
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+}
+
+.p-multiselect-option:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.p-multiselect-filter-container {
+    padding: 8px !important;
+}
+
+.p-multiselect-filter {
+    width: 100% !important;
+    padding: 8px 12px !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 6px !important;
+}
+
+// Hide the search icon inside multiselect filter
+.p-multiselect-filter-container {
+    .p-icon-wrapper,
+    .p-multiselect-filter-icon,
+    .p-icon,
+    svg {
+        display: none !important;
+    }
+}
+
+.p-multiselect-header {
+    .p-icon,
+    svg.p-icon {
+        display: none !important;
+    }
+}
+
+// Multiselect chip/tag styles
+.p-multiselect-chip {
+    background-color: var(--primary-color, #3b82f6) !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    padding: 2px 8px !important;
+    margin: 2px !important;
+}
+
+.p-multiselect-token {
+    background-color: var(--primary-color, #3b82f6) !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+}
+
+.p-multiselect-token-icon {
+    color: #fff !important;
+}

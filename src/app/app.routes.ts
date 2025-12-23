@@ -38,6 +38,11 @@ export const routes: Routes = [
             path: 'Families',
             loadComponent: () => import('./features/super-admin/families/families-home/families-home.component').then(m => m.FamiliesHomeComponent),
             canActivate: [AuthGuard]
+          },
+          {
+            path: 'Students',
+            loadComponent: () => import('./features/super-admin/students/students-home/students-home.component').then(m => m.StudentsHomeComponent),
+            canActivate: [AuthGuard]
           }
         ]
       }

@@ -455,6 +455,15 @@ export class DataService {
           route: routes.families,
           base: 'Families',
           subRoutes: [],
+        },
+        {
+          menuValue: 'الطلاب',
+          icon: 'book-2',
+          hasSubRoute: false,
+          showSubRoute: false,
+          route: routes.students,
+          base: 'Students',
+          subRoutes: [],
         }
       ],
     },

@@ -19,4 +19,5 @@ export const routes={
   supervisors: '/Supervisors',
   teachers: '/Teachers',
   families: '/Families',
+  students: '/Students',
 };
