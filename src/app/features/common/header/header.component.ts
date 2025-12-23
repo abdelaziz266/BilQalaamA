@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { routes } from '../../../shared/routes/routes';
 // import { MainMenu, Menu } from '../../../shared/model/sidebar.model';
 // import { DataService } from '../../../shared/data/data.service';
 // import { CommonService } from '../../../shared/common/common.service';
 // import { SidebarService } from '../../../shared/sidebar/sidebar.service';
 // import { SettingsService } from '../../../shared/settings/settings.service';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { MainMenu, Menu } from '../../../core/models/sidebar.model';
 import { DataService } from '../../../core/services/data.service';
 import { CommonService } from '../../../core/services/common.service';
 import { SidebarService } from '../../../core/services/sidebar.service';
 import { SettingsService } from '../../../core/services/settings.service';
+import { TokenService } from '../../../core/services/token.service';
 
 
 @Component({
@@ -20,7 +21,7 @@ import { SettingsService } from '../../../core/services/settings.service';
     standalone:true,
     imports: [RouterLink]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
  
   base = '';
   page = '';
@@ -31,6 +32,11 @@ export class HeaderComponent {
   public multilevel: boolean[] = [false, false, false];
   public submenus = false;
   public addClass = false;
+  
+  // User info from token
+  userName = '';
+  userRole = '';
+  
   openSubmenus() {
     this.submenus = !this.submenus;
   }
@@ -46,6 +52,8 @@ export class HeaderComponent {
     private sidebar: SidebarService,
     public settings: SettingsService,
     private sideBar: SidebarService,
+    private tokenService: TokenService,
+    private router: Router
   ) {
     this.common.base.subscribe((base: string) => {
       this.base = base;
@@ -69,6 +77,16 @@ export class HeaderComponent {
     });
     
   }
+
+  ngOnInit(): void {
+    this.loadUserInfo();
+  }
+
+  loadUserInfo(): void {
+    this.userName = this.tokenService.getUserName();
+    this.userRole = this.tokenService.getUserRoleLabel();
+  }
+
   elem = document.documentElement;
   fullscreen() {
     if (!document.fullscreenElement) {
@@ -172,6 +190,11 @@ export class HeaderComponent {
         }
       });
     });
+  }
+
+  logout(): void {
+    this.tokenService.clearToken();
+    this.router.navigate([this.routes.login]);
   }
 
   multiLevelOne() {
