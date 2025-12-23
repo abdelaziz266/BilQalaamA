@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { routes } from '../../../shared/routes/routes';
-// import { MainMenu, Menu } from '../../../shared/model/sidebar.model';
-// import { DataService } from '../../../shared/data/data.service';
-// import { CommonService } from '../../../shared/common/common.service';
-// import { SidebarService } from '../../../shared/sidebar/sidebar.service';
-// import { SettingsService } from '../../../shared/settings/settings.service';
 import { RouterLink, Router } from '@angular/router';
 import { MainMenu, Menu } from '../../../core/models/sidebar.model';
 import { DataService } from '../../../core/services/data.service';

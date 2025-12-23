@@ -11,7 +11,8 @@
             </nav>
         </div>
         <div class="gap-2 d-flex align-items-center flex-wrap">
-            <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add" (click)="resetForm()">
+            <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add"
+                (click)="resetForm()">
                 <i class="ti ti-square-rounded-plus-filled me-1"></i>إضافة درس جديد
             </button>
         </div>
@@ -19,72 +20,43 @@
 
     <!-- Table Card -->
     <div class="card border-0 rounded-0">
-        <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap" *ngIf="lessons.length > 0">
-            <div class="d-flex align-items-center gap-2 flex-nowrap overflow-auto">
-                <p-multiselect [options]="supervisors" 
-                    [(ngModel)]="selectedSupervisorIds" 
-                    optionLabel="supervisorName" 
-                    optionValue="id" 
-                    placeholder="فلتر حسب المشرف" 
-                    class="form-control" 
-                    [filter]="true"
-                    [showClear]="true"
-                    (onChange)="onFilterChange()"
-                    [style]="{'min-width': '160px'}">
+        <!-- <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+            <div class="d-flex align-items-center gap-2 flex-nowrap">
+                <p-multiselect [options]="supervisors" [(ngModel)]="selectedSupervisorIds" optionLabel="supervisorName"
+                    optionValue="id" placeholder="فلتر حسب المشرف" class="form-control" [filter]="true"
+                    [showClear]="true" (onChange)="onSupervisorChange()" (onClear)="onSupervisorClear()"
+                    [style]="{'min-width': '200px'}">
                 </p-multiselect>
-                <p-multiselect [options]="families" 
-                    [(ngModel)]="selectedFamilyIds" 
-                    optionLabel="familyName" 
-                    optionValue="id" 
-                    placeholder="فلتر حسب العائلة" 
-                    class="form-control" 
-                    [filter]="true"
-                    [showClear]="true"
-                    (onChange)="onFilterChange()"
-                    [style]="{'min-width': '160px'}">
+                <p-multiselect [options]="families" [(ngModel)]="selectedFamilyIds" optionLabel="familyName"
+                    optionValue="id" placeholder="فلتر حسب العائلة" class="form-control" [filter]="true"
+                    [showClear]="true" (onChange)="onFamilyChange()" (onClear)="onFamilyClear()"
+                    [style]="{'min-width': '200px'}">
                 </p-multiselect>
-                <p-multiselect [options]="teachers" 
-                    [(ngModel)]="selectedTeacherIds" 
-                    optionLabel="teacherName" 
-                    optionValue="id" 
-                    placeholder="فلتر حسب المعلم" 
-                    class="form-control" 
-                    [filter]="true"
-                    [showClear]="true"
-                    (onChange)="onFilterChange()"
-                    [style]="{'min-width': '160px'}">
+                <p-multiselect [options]="teachers" [(ngModel)]="selectedTeacherIds" optionLabel="teacherName"
+                    optionValue="id" placeholder="فلتر حسب المعلم" class="form-control" [filter]="true"
+                    [showClear]="true" (onChange)="onFilterChange()" [style]="{'min-width': '200px'}">
                 </p-multiselect>
-                <p-multiselect [options]="students" 
-                    [(ngModel)]="selectedStudentIds" 
-                    optionLabel="studentName" 
-                    optionValue="id" 
-                    placeholder="فلتر حسب الطالب" 
-                    class="form-control" 
-                    [filter]="true"
-                    [showClear]="true"
-                    (onChange)="onFilterChange()"
-                    [style]="{'min-width': '160px'}">
+                <p-multiselect [options]="students" [(ngModel)]="selectedStudentIds" optionLabel="studentName"
+                    optionValue="id" placeholder="فلتر حسب الطالب" class="form-control" [filter]="true"
+                    [showClear]="true" (onChange)="onFilterChange()" [style]="{'min-width': '200px'}">
                 </p-multiselect>
-                <input type="text" class="form-control flex-shrink-0" bsDatepicker [(ngModel)]="fromDate" 
-                    (bsValueChange)="onFromDateChange()" placeholder="من تاريخ" style="width: 130px;">
-                <input type="text" class="form-control flex-shrink-0" bsDatepicker [(ngModel)]="toDate" 
-                    (bsValueChange)="onToDateChange()" [disabled]="!fromDate" [bsConfig]="{ minDate: fromDate }" 
-                    placeholder="إلى تاريخ" style="width: 130px;">
-                <button class="btn btn-outline-secondary btn-sm text-nowrap flex-shrink-0" 
-                    *ngIf="hasActiveFilters()" 
+                <input type="text" class="form-control flex-shrink-0" bsDatepicker [(ngModel)]="fromDate"
+                    (bsValueChange)="onFromDateChange()" placeholder="من تاريخ" style="width: 180px;">
+                <input type="text" class="form-control flex-shrink-0" bsDatepicker [(ngModel)]="toDate"
+                    (bsValueChange)="onToDateChange()" [disabled]="!fromDate" [bsConfig]="{ minDate: fromDate }"
+                    placeholder="إلى تاريخ" style="width: 180px;">
+                <button class="btn btn-outline-secondary btn-sm text-nowrap flex-shrink-0" *ngIf="hasActiveFilters()"
                     (click)="clearFilters()">
                     <i class="ti ti-x me-1"></i>مسح الفلاتر
                 </button>
             </div>
-        </div>
+        </div> -->
         <div class="card-body d-flex flex-column">
-            <!-- No Data State -->
             <div *ngIf="lessons.length === 0" class="text-center py-5">
                 <i class="ti ti-database-off fs-1 text-muted"></i>
                 <p class="mt-2 text-muted">لم يتم العثور على دروس</p>
             </div>
 
-            <!-- Table -->
             <div class="table-responsive table-container" *ngIf="lessons.length > 0">
                 <table class="table table-striped mb-0" matSort (matSortChange)="sortData($event)">
                     <thead>
@@ -112,7 +84,8 @@
                             </td>
                             <td>
                                 <div class="dropdown table-action">
-                                    <a href="javascript:void(0);" class="action-icon btn btn-xs shadow btn-icon btn-outline-light"
+                                    <a href="javascript:void(0);"
+                                        class="action-icon btn btn-xs shadow btn-icon btn-outline-light"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="ti ti-dots-vertical"></i>
                                     </a>
@@ -134,10 +107,7 @@
             </div>
 
             <!-- Pagination -->
-            <app-custom-pagination 
-                [rowCount]="rowCount" 
-                [pageNumber]="pageNumber" 
-                [pagesCount]="pagesCount"
+            <app-custom-pagination [rowCount]="rowCount" [pageNumber]="pageNumber" [pagesCount]="pagesCount"
                 (pageChange)="onPageChange($event)">
             </app-custom-pagination>
         </div>
@@ -154,9 +124,9 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">الطالب <span class="text-danger">*</span></label>
-                    <p-select [options]="students" 
-                        formControlName="studentId" optionLabel="studentName" optionValue="id" 
-                        placeholder="اختر الطالب" class="form-control w-100" [filter]="true"></p-select>
+                    <p-select [options]="students" formControlName="studentId" optionLabel="studentName"
+                        optionValue="id" placeholder="اختر الطالب" class="form-control w-100"
+                        [filter]="true"></p-select>
                     <div class="text-danger mt-1" *ngIf="studentId.invalid && (studentId.dirty || studentId.touched)">
                         <small *ngIf="studentId.errors?.['required']">الطالب مطلوب.</small>
                     </div>
@@ -164,9 +134,9 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">المعلم <span class="text-danger">*</span></label>
-                    <p-select [options]="teachers" 
-                        formControlName="teacherId" optionLabel="teacherName" optionValue="id" 
-                        placeholder="اختر المعلم" class="form-control w-100" [filter]="true"></p-select>
+                    <p-select [options]="teachers" formControlName="teacherId" optionLabel="teacherName"
+                        optionValue="id" placeholder="اختر المعلم" class="form-control w-100"
+                        [filter]="true"></p-select>
                     <div class="text-danger mt-1" *ngIf="teacherId.invalid && (teacherId.dirty || teacherId.touched)">
                         <small *ngIf="teacherId.errors?.['required']">المعلم مطلوب.</small>
                     </div>
@@ -174,27 +144,28 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">تاريخ الدرس <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" bsDatepicker formControlName="lessonDate" placeholder="اختر تاريخ الدرس">
-                    <div class="text-danger mt-1" *ngIf="lessonDate.invalid && (lessonDate.dirty || lessonDate.touched)">
+                    <input type="text" class="form-control" bsDatepicker formControlName="lessonDate"
+                        placeholder="اختر تاريخ الدرس">
+                    <div class="text-danger mt-1"
+                        *ngIf="lessonDate.invalid && (lessonDate.dirty || lessonDate.touched)">
                         <small *ngIf="lessonDate.errors?.['required']">تاريخ الدرس مطلوب.</small>
                     </div>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">مدة الدرس (بالدقائق) <span class="text-danger">*</span></label>
-                    <p-select [options]="durationOptions" 
-                        formControlName="durationMinutes" optionLabel="label" optionValue="value" 
-                        placeholder="اختر المدة" class="form-control w-100"></p-select>
-                    <div class="text-danger mt-1" *ngIf="durationMinutes.invalid && (durationMinutes.dirty || durationMinutes.touched)">
+                    <p-select [options]="durationOptions" formControlName="durationMinutes" optionLabel="label"
+                        optionValue="value" placeholder="اختر المدة" class="form-control w-100"></p-select>
+                    <div class="text-danger mt-1"
+                        *ngIf="durationMinutes.invalid && (durationMinutes.dirty || durationMinutes.touched)">
                         <small *ngIf="durationMinutes.errors?.['required']">مدة الدرس مطلوبة.</small>
                     </div>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">التقييم</label>
-                    <p-select [options]="evaluationOptions" 
-                        formControlName="evaluation" optionLabel="label" optionValue="value" 
-                        placeholder="اختر التقييم" class="form-control w-100"></p-select>
+                    <p-select [options]="evaluationOptions" formControlName="evaluation" optionLabel="label"
+                        optionValue="value" placeholder="اختر التقييم" class="form-control w-100"></p-select>
                 </div>
 
                 <div class="col-12 mb-3">
@@ -221,9 +192,9 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">الطالب <span class="text-danger">*</span></label>
-                    <p-select [options]="students" 
-                        formControlName="studentId" optionLabel="studentName" optionValue="id" 
-                        placeholder="اختر الطالب" class="form-control w-100" [filter]="true"></p-select>
+                    <p-select [options]="students" formControlName="studentId" optionLabel="studentName"
+                        optionValue="id" placeholder="اختر الطالب" class="form-control w-100"
+                        [filter]="true"></p-select>
                     <div class="text-danger mt-1" *ngIf="studentId.invalid && (studentId.dirty || studentId.touched)">
                         <small *ngIf="studentId.errors?.['required']">الطالب مطلوب.</small>
                     </div>
@@ -231,9 +202,9 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">المعلم <span class="text-danger">*</span></label>
-                    <p-select [options]="teachers" 
-                        formControlName="teacherId" optionLabel="teacherName" optionValue="id" 
-                        placeholder="اختر المعلم" class="form-control w-100" [filter]="true"></p-select>
+                    <p-select [options]="teachers" formControlName="teacherId" optionLabel="teacherName"
+                        optionValue="id" placeholder="اختر المعلم" class="form-control w-100"
+                        [filter]="true"></p-select>
                     <div class="text-danger mt-1" *ngIf="teacherId.invalid && (teacherId.dirty || teacherId.touched)">
                         <small *ngIf="teacherId.errors?.['required']">المعلم مطلوب.</small>
                     </div>
@@ -241,27 +212,28 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">تاريخ الدرس <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" bsDatepicker formControlName="lessonDate" placeholder="اختر تاريخ الدرس">
-                    <div class="text-danger mt-1" *ngIf="lessonDate.invalid && (lessonDate.dirty || lessonDate.touched)">
+                    <input type="text" class="form-control" bsDatepicker formControlName="lessonDate"
+                        placeholder="اختر تاريخ الدرس">
+                    <div class="text-danger mt-1"
+                        *ngIf="lessonDate.invalid && (lessonDate.dirty || lessonDate.touched)">
                         <small *ngIf="lessonDate.errors?.['required']">تاريخ الدرس مطلوب.</small>
                     </div>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">مدة الدرس (بالدقائق) <span class="text-danger">*</span></label>
-                    <p-select [options]="durationOptions" 
-                        formControlName="durationMinutes" optionLabel="label" optionValue="value" 
-                        placeholder="اختر المدة" class="form-control w-100"></p-select>
-                    <div class="text-danger mt-1" *ngIf="durationMinutes.invalid && (durationMinutes.dirty || durationMinutes.touched)">
+                    <p-select [options]="durationOptions" formControlName="durationMinutes" optionLabel="label"
+                        optionValue="value" placeholder="اختر المدة" class="form-control w-100"></p-select>
+                    <div class="text-danger mt-1"
+                        *ngIf="durationMinutes.invalid && (durationMinutes.dirty || durationMinutes.touched)">
                         <small *ngIf="durationMinutes.errors?.['required']">مدة الدرس مطلوبة.</small>
                     </div>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">التقييم</label>
-                    <p-select [options]="evaluationOptions" 
-                        formControlName="evaluation" optionLabel="label" optionValue="value" 
-                        placeholder="اختر التقييم" class="form-control w-100"></p-select>
+                    <p-select [options]="evaluationOptions" formControlName="evaluation" optionLabel="label"
+                        optionValue="value" placeholder="اختر التقييم" class="form-control w-100"></p-select>
                 </div>
 
                 <div class="col-12 mb-3">
@@ -292,7 +264,8 @@
                 <p class="mb-3">هل أنت متأكد أنك تريد حذف هذا الدرس؟</p>
                 <div class="d-flex justify-content-center">
                     <button type="button" class="btn btn-sm btn-light me-2 w-100" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="button" class="btn btn-sm btn-primary w-100" data-bs-dismiss="modal" (click)="onDeleteLesson()">نعم، احذف</button>
+                    <button type="button" class="btn btn-sm btn-primary w-100" data-bs-dismiss="modal"
+                        (click)="onDeleteLesson()">نعم، احذف</button>
                 </div>
             </div>
         </div>

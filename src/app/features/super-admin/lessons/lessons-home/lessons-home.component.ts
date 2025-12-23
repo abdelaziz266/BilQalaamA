@@ -35,7 +35,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   teachers: ITeacherResponse[] = [];
   students: IStudentResponse[] = [];
   supervisors: IGetSupervisor[] = [];
-  
+
   totalCount = 0;
   rowCount = 10;
   pageNumber = 1;
@@ -46,7 +46,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   selectedLessonId: number | null = null;
 
   evaluationOptions = LessonEvaluationOptions;
-  
+
   durationOptions = [
     { label: '20 دقيقة', value: 20 },
     { label: '30 دقيقة', value: 30 },
@@ -90,6 +90,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.loadLessons();
     this.loadFamilies();
+
     this.loadTeachers();
     this.loadStudents();
     this.loadSupervisors();
@@ -113,7 +114,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
 
   loadLessons(): void {
     this.lessonService.getLessons(
-      this.pageNumber, 
+      this.pageNumber,
       this.rowCount,
       this.selectedSupervisorIds.length > 0 ? this.selectedSupervisorIds : undefined,
       this.selectedTeacherIds.length > 0 ? this.selectedTeacherIds : undefined,
@@ -137,6 +138,70 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
         this.families = res.data.items;
       }
     });
+  }
+
+  onSupervisorChange(): void {
+    debugger;
+    if (this.selectedSupervisorIds.length > 0) {
+      // Load families based on selected supervisors
+      this.familyService.getFamiliesBySupervisor(this.selectedSupervisorIds).subscribe({
+        next: (res: any) => {
+          this.families = res.data.items;
+          // Reset family filter when supervisor changes
+          this.selectedFamilyIds = [];
+        },
+        error: (err) => this.handleError(err)
+      });
+      this.teacherService.getTeavhersBySupervisors(this.selectedSupervisorIds).subscribe({
+        next: (res: any) => {
+          this.teachers = res.data.items;
+          // Reset family filter when supervisor changes
+          this.selectedTeacherIds = [];
+        },
+        error: (err) => this.handleError(err)
+      });
+    }
+    else {
+      this.loadFamilies();
+      this.loadTeachers();
+    }
+  }
+    onFamilyChange(): void {
+      debugger;
+      if(this.selectedFamilyIds.length > 0) {
+      // Load families based on selected supervisors
+      this.studentService.getStudentsByFamilies(this.selectedFamilyIds).subscribe({
+        next: (res: any) => {
+          this.students = res.data.items;
+          // Reset family filter when supervisor changes
+          this.selectedStudentIds = [];
+        },
+        error: (err) => this.handleError(err)
+      });
+    }
+    else {
+      this.loadStudents();
+    }
+
+    // Reset page and reload lessons
+    this.pageNumber = 1;
+    this.loadLessons();
+  }
+
+  onSupervisorClear(): void {
+
+    this.selectedSupervisorIds = [];
+    this.loadFamilies();
+    this.selectedFamilyIds = [];
+    this.pageNumber = 1;
+    this.loadLessons();
+  }
+  onFamilyClear(): void {
+    this.selectedFamilyIds = [];
+    this.selectedTeacherIds = [];
+    this.selectedStudentIds = [];
+    this.pageNumber = 1;
+    this.loadLessons();
   }
 
   loadTeachers(): void {
@@ -210,11 +275,11 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
 
   hasActiveFilters(): boolean {
     return (this.selectedFamilyIds && this.selectedFamilyIds.length > 0) ||
-           (this.selectedTeacherIds && this.selectedTeacherIds.length > 0) ||
-           (this.selectedStudentIds && this.selectedStudentIds.length > 0) ||
-           (this.selectedSupervisorIds && this.selectedSupervisorIds.length > 0) ||
-           !!this.fromDate ||
-           !!this.toDate;
+      (this.selectedTeacherIds && this.selectedTeacherIds.length > 0) ||
+      (this.selectedStudentIds && this.selectedStudentIds.length > 0) ||
+      (this.selectedSupervisorIds && this.selectedSupervisorIds.length > 0) ||
+      !!this.fromDate ||
+      !!this.toDate;
   }
 
   clearFilters(): void {
@@ -247,7 +312,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
         const lesson = res.data;
         // Convert date string to Date object for bsDatepicker
         const lessonDate = new Date(lesson.lessonDate);
-        
+
         this.lessonForm.patchValue({
           studentId: lesson.studentId,
           teacherId: lesson.teacherId,
@@ -268,7 +333,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
     }
 
     const formData = this.lessonForm.getRawValue();
-    
+
     if (this.isEditMode && this.selectedLessonId) {
       const updateData = {
         studentId: formData.studentId,

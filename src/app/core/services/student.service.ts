@@ -37,11 +37,30 @@ export class StudentService {
 
   return this.http.get<any>(`${this.apiUrl}get`, { params });
 }
+getStudentsByFamilies(
+  familyIds: number[],
+  pageNumber: number = 1,
+  pageSize: number = 10000
+): Observable<any> {
+  let params = new HttpParams()
+    .set('pageNumber', pageNumber.toString())
+    .set('pageSize', pageSize.toString());
+
+  familyIds.forEach(id => {
+    params = params.append('familyIds', id.toString());
+  });
+
+  return this.http.get<any>(
+    `${this.apiUrl}by-families`,
+    { params }
+  );
+}
 
 
   getStudentById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}get/${id}`);
   }
+
 
   createStudent(student: ICreateStudent): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}create`, student);

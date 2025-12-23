@@ -19,6 +19,27 @@ export class FamilyService {
     return this.http.get<any>(`${this.apiUrl}get`, { params });
   }
 
+  getFamiliesBySupervisor(
+  supervisorIds: number[],
+  pageNumber: number = 1,
+  pageSize: number = 10000
+): Observable<any> {
+
+  let params = new HttpParams()
+    .set('pageNumber', pageNumber.toString())
+    .set('pageSize', pageSize.toString());
+
+  supervisorIds.forEach(id => {
+    params = params.append('supervisorIds', id.toString());
+  });
+
+  return this.http.get<any>(
+    `${this.apiUrl}by-supervisors`,
+    { params }
+  );
+}
+
+
   getFamilyById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}get/${id}`);
   }
