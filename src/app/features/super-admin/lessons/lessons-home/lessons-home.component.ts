@@ -17,6 +17,7 @@ import { FamilyService } from '../../../../core/services/family.service';
 import { TeacherService } from '../../../../core/services/teacher.service';
 import { StudentService } from '../../../../core/services/student.service';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
+import { TokenService, UserRole } from '../../../../core/services/token.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -75,6 +76,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
     private teacherService: TeacherService,
     private studentService: StudentService,
     private supervisorService: SupervisorService,
+    private tokenService: TokenService,
     private toastr: ToastrService
   ) {
     this.lessonForm = this.fb.group({
@@ -429,4 +431,8 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   get durationMinutes() { return this.lessonForm.get('durationMinutes')!; }
   get evaluation() { return this.lessonForm.get('evaluation')!; }
   get notes() { return this.lessonForm.get('notes')!; }
+
+  isSuperAdmin(): boolean {
+    return this.tokenService.getUserRole() === UserRole.SuperAdmin;
+  }
 }

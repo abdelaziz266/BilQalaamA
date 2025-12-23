@@ -67,7 +67,7 @@
                             <th mat-sort-header="lessonDate">تاريخ الدرس</th>
                             <th mat-sort-header="durationMinutes">المدة (دقيقة)</th>
                             <th mat-sort-header="evaluation">التقييم</th>
-                            <th>الإجراء</th>
+                            <th *ngIf="isSuperAdmin()">الإجراء</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,7 +83,7 @@
                                 </span>
                             </td>
                             <td>
-                                <div class="dropdown table-action">
+                                <div class="dropdown table-action" *ngIf="isSuperAdmin()">
                                     <a href="javascript:void(0);"
                                         class="action-icon btn btn-xs shadow btn-icon btn-outline-light"
                                         data-bs-toggle="dropdown" aria-expanded="false">

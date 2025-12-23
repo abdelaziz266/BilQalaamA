@@ -3,12 +3,16 @@ import { BehaviorSubject, Observable, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { apiResultFormat } from '../models/pages.model';
 import { routes } from '../../shared/routes/routes';
+import { TokenService, UserRole } from './token.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+        private tokenService: TokenService,
+    
+  ) { }
 
   private collapseSubject = new BehaviorSubject<boolean>(false);
   collapse$ = this.collapseSubject.asObservable();
@@ -570,5 +574,44 @@ export class DataService {
         return res;
       })
     );
+  }
+  
+private getUserRole(): UserRole | null {
+    return this.tokenService.getUserRole();
+  }
+
+  isSuperAdmin(): boolean {
+    return this.getUserRole() === UserRole.SuperAdmin;
+  }
+
+  getSidebarData(): any[] {
+    const userRole = this.getUserRole();
+
+    // SuperAdmin يرى الكل
+    if (userRole === UserRole.SuperAdmin) {
+      return this.sidebarData1;
+    }
+
+    // Admin يرى: المعلمين، العائلات، الطلاب، الدروس (بدون المشرفين)
+    if (userRole === UserRole.Admin) {
+      return this.sidebarData1.map((section: any) => ({
+        ...section,
+        menu: section.menu.filter((item: any) => 
+          item.menuValue !== 'المشرفين'
+        )
+      }));
+    }
+    // Teacher يرى: الدروس فقط
+    if (userRole === UserRole.Teacher) {
+      return this.sidebarData1.map((section: any) => ({
+        ...section,
+        menu: section.menu.filter((item: any) => 
+          item.menuValue === 'الدروس'
+        )
+      }));
+    }
+
+    // باقي الأدوار: لا تظهر أي menu
+    return [];
   }
 }

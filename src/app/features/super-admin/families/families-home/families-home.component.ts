@@ -10,6 +10,7 @@ import { IGetSupervisor } from '../../../../core/models/supervisor.dto';
 import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currency.enum';
 import { FamilyService } from '../../../../core/services/family.service';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
+import { TokenService, UserRole } from '../../../../core/services/token.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -43,6 +44,7 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private familyService: FamilyService,
     private supervisorService: SupervisorService,
+    private tokenService: TokenService,
     private toastr: ToastrService
   ) {
     this.familyForm = this.fb.group({
@@ -251,4 +253,8 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
   get country() { return this.familyForm.get('country')!; }
   get hourlyRate() { return this.familyForm.get('hourlyRate')!; }
   get currency() { return this.familyForm.get('currency')!; }
+
+  isSuperAdmin(): boolean {
+    return this.tokenService.getUserRole() === UserRole.SuperAdmin;
+  }
 }

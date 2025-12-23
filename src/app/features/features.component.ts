@@ -71,14 +71,14 @@ layoutMode = '';
       this.sideBar.expandSideBar.subscribe((res: string) => {
       this.expandMenu = res;
       if (res == 'false' && this.miniSidebar == 'true') {
-        this.data.sidebarData1.map((mainMenus: sidebarDataone) => {
+        this.data.getSidebarData().map((mainMenus: sidebarDataone) => {
           mainMenus.menu.map((resMenu: menu) => {
             resMenu.showSubRoute = false;
           });
         });
       }
       if (res == 'true' && this.miniSidebar == 'true') {
-        this.data.sidebarData1.map((mainMenus: sidebarDataone) => {
+        this.data.getSidebarData().map((mainMenus: sidebarDataone) => {
           mainMenus.menu.map((resMenu: menu) => {
             const menuValue = sessionStorage.getItem('menuValue');
             if (menuValue && menuValue == resMenu.menuValue) {

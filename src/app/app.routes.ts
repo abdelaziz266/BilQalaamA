@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { NoAuthGuard } from './core/guard/no-auth.guard';
 import { AuthGuard } from './core/guard/auth.guard';
+import { RoleGuard } from './core/guard/role.guard';
 
 export const routes: Routes = [
   {
@@ -27,27 +28,27 @@ export const routes: Routes = [
           {
             path: 'Supervisors',
             loadComponent: () => import('./features/super-admin/supervisors/supervisors-home/supervisors-home.component').then(m => m.SupervisorsHomeComponent),
-            canActivate: [AuthGuard]
+            canActivate: [AuthGuard, RoleGuard]
           },
           {
             path: 'Teachers',
             loadComponent: () => import('./features/super-admin/teachers/teachers-home/teachers-home.component').then(m => m.TeachersHomeComponent),
-            canActivate: [AuthGuard]
+            canActivate: [AuthGuard, RoleGuard]
           },
           {
             path: 'Families',
             loadComponent: () => import('./features/super-admin/families/families-home/families-home.component').then(m => m.FamiliesHomeComponent),
-            canActivate: [AuthGuard]
+            canActivate: [AuthGuard, RoleGuard]
           },
           {
             path: 'Students',
             loadComponent: () => import('./features/super-admin/students/students-home/students-home.component').then(m => m.StudentsHomeComponent),
-            canActivate: [AuthGuard]
+            canActivate: [AuthGuard, RoleGuard]
           },
           {
             path: 'Lessons',
             loadComponent: () => import('./features/super-admin/lessons/lessons-home/lessons-home.component').then(m => m.LessonsHomeComponent),
-            canActivate: [AuthGuard]
+            canActivate: [AuthGuard, RoleGuard]
           }
         ]
       }

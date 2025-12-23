@@ -13,6 +13,7 @@ import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currenc
 import { StudentService } from '../../../../core/services/student.service';
 import { FamilyService } from '../../../../core/services/family.service';
 import { TeacherService } from '../../../../core/services/teacher.service';
+import { TokenService, UserRole } from '../../../../core/services/token.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -52,6 +53,7 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
     private studentService: StudentService,
     private familyService: FamilyService,
     private teacherService: TeacherService,
+    private tokenService: TokenService,
     private toastr: ToastrService
   ) {
     this.studentForm = this.fb.group({
@@ -287,4 +289,8 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
   get teacherId() { return this.studentForm.get('teacherId')!; }
   get hourlyRate() { return this.studentForm.get('hourlyRate')!; }
   get currency() { return this.studentForm.get('currency')!; }
+
+  isSuperAdmin(): boolean {
+    return this.tokenService.getUserRole() === UserRole.SuperAdmin;
+  }
 }

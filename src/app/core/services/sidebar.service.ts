@@ -49,7 +49,7 @@ export class SidebarService {
     this.toggleSideBar.next("false");
     localStorage.removeItem('isMiniSidebar');
     
-    this.data.sidebarData1.forEach((mainMenus: sidebarDataone) => {
+    this.data.getSidebarData().forEach((mainMenus: sidebarDataone) => {
       mainMenus.menu.forEach((resMenu: menu) => {
         if (menuValue && menuValue === resMenu.menuValue) {
           
@@ -61,7 +61,7 @@ export class SidebarService {
     this.toggleSideBar.next('true');
     localStorage.setItem('isMiniSidebar', 'true');
 
-    this.data.sidebarData1.forEach((mainMenus: sidebarDataone) => {
+    this.data.getSidebarData().forEach((mainMenus: sidebarDataone) => {
       mainMenus.menu.forEach((resMenu: menu) => {
         resMenu.showSubRoute = false;
       });

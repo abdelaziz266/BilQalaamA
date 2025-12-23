@@ -8,6 +8,7 @@ import { CustomPaginationComponent, PageChangeEvent } from '../../../../shared/c
 import { IGetSupervisor } from '../../../../core/models/supervisor.dto';
 import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currency.enum';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
+import { TokenService, UserRole } from '../../../../core/services/token.service';
 import { SharedService } from '../../../../core/services/shared.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -52,6 +53,7 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   constructor(
     private supervisorService: SupervisorService,
     private fb: FormBuilder,
+    private tokenService: TokenService,
     private sharedService: SharedService,
     private toastr: ToastrService
   ) { }
@@ -265,5 +267,9 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
 
   sortData(sort: Sort): void {
     // Implement sorting if needed
+  }
+
+  isSuperAdmin(): boolean {
+    return this.tokenService.getUserRole() === UserRole.SuperAdmin;
   }
 }

@@ -9,6 +9,7 @@ import { SidebarService } from '../../../core/services/sidebar.service';
 import { DataService } from '../../../core/services/data.service';
 import { CommonService } from '../../../core/services/common.service';
 import { SettingsService } from '../../../core/services/settings.service';
+import { TokenService, UserRole } from '../../../core/services/token.service';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -34,7 +35,9 @@ export class SidebarComponent {
     private data: DataService,
     private router: Router,
     private common: CommonService,
-    private settings: SettingsService
+    private settings: SettingsService,
+        private tokenService: TokenService,
+    
   ) {
     router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationStart) {
@@ -50,7 +53,7 @@ export class SidebarComponent {
       }
     });
     this.getRoutes(this.router);
-    this.side_bar_data = this.data.sidebarData1;
+    this.side_bar_data = this.data.getSidebarData();
     this.common.base.subscribe((res: string) => {
       this.base = res;
     });
@@ -139,7 +142,6 @@ export class SidebarComponent {
       });
     });
   }
-
   // expandSubMenus(menu: MenuItem): void {
   //   sessionStorage.setItem('menuValue', menu.menuValue);
   //   this.side_bar_data.forEach((mainMenus: MenuItem) => {

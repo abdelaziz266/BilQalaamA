@@ -73,7 +73,7 @@
                             <th mat-sort-header="familyName">العائلة</th>
                             <th mat-sort-header="teacherName">المعلم</th>
                             <th mat-sort-header="hourlyRate">سعر الساعة</th>
-                            <th>الإجراء</th>
+                            <th *ngIf="isSuperAdmin()">الإجراء</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,7 +85,7 @@
                             <td>{{data.teacherName || '---'}}</td>
                             <td>{{data.hourlyRate}} {{getCurrencyLabel(data.currency)}}</td>
                             <td>
-                                <div class="dropdown table-action">
+                                <div class="dropdown table-action" *ngIf="isSuperAdmin()">
                                     <a href="javascript:void(0);" class="action-icon btn btn-xs shadow btn-icon btn-outline-light"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="ti ti-dots-vertical"></i>

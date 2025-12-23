@@ -10,6 +10,7 @@ import { IGetSupervisor } from '../../../../core/models/supervisor.dto';
 import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currency.enum';
 import { TeacherService } from '../../../../core/services/teacher.service';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
+import { TokenService, UserRole } from '../../../../core/services/token.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -55,6 +56,7 @@ export class TeachersHomeComponent implements OnInit, AfterViewInit {
     private teacherService: TeacherService,
     private supervisorService: SupervisorService,
     private fb: FormBuilder,
+    private tokenService: TokenService,
     private toastr: ToastrService
   ) { }
 
@@ -248,5 +250,9 @@ export class TeachersHomeComponent implements OnInit, AfterViewInit {
 
   sortData(sort: Sort): void {
     // Implement sorting if needed
+  }
+
+  isSuperAdmin(): boolean {
+    return this.tokenService.getUserRole() === UserRole.SuperAdmin;
   }
 }
