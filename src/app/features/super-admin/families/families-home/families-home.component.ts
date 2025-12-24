@@ -184,6 +184,12 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
     }
 
     const formData = this.familyForm.getRawValue();
+    
+    // إذا لم يكن مشرف عام، لا نرسل supervisorId لأن الـ backend سيتعامل معه
+    if (!this.isSuperAdmin()) {
+      delete formData.supervisorId;
+    }
+
     if (this.isEditMode && this.selectedFamilyId) {
       const updateData = { ...formData };
       if (!updateData.password) delete updateData.password;

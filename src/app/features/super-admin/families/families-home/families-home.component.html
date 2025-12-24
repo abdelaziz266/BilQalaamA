@@ -149,7 +149,7 @@
                         <small *ngIf="confirmPassword.errors?.['passwordMismatch']">كلمات المرور غير متطابقة.</small>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6 mb-3" *ngIf="isSuperAdmin()">
                     <label class="form-label">المشرف المسؤول</label>
                     <p-select [options]="supervisors" 
                         formControlName="supervisorId" optionLabel="supervisorName" optionValue="id" 
@@ -249,7 +249,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6 mb-3" *ngIf="isSuperAdmin()">
                     <label class="form-label">المشرف المسؤول</label>
                     <p-select [options]="supervisors" 
                         formControlName="supervisorId" optionLabel="supervisorName" optionValue="id" 

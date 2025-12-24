@@ -202,6 +202,12 @@ export class TeachersHomeComponent implements OnInit, AfterViewInit {
     }
 
     const { confirmPassword, ...data } = this.teacherForm.value;
+    
+    // إذا لم يكن مشرف عام، لا نرسل supervisorId لأن الـ backend سيتعامل معه
+    if (!this.isSuperAdmin()) {
+      delete data.supervisorId;
+    }
+
     if (this.isEditMode && this.selectedTeacherId) {
       if (!data.password) delete data.password;
       this.teacherService.updateTeacher(this.selectedTeacherId, { ...data, id: this.selectedTeacherId }).subscribe({

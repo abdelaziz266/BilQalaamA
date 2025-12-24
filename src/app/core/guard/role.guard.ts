@@ -14,7 +14,7 @@ export class RoleGuard implements CanActivate {
     private toastr: ToastrService
   ) { }
 
-  private readonly rolePermissions = {
+  private readonly rolePermissions: Record<UserRole, string[]> = {
     [UserRole.SuperAdmin]: ['supervisors', 'teachers', 'families', 'students', 'lessons'],
     [UserRole.Admin]: ['teachers', 'families', 'students', 'lessons'],
     [UserRole.Teacher]: ['lessons'],
@@ -28,7 +28,7 @@ export class RoleGuard implements CanActivate {
   ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     
     const userRole = this.tokenService.getUserRole();
-    const routePath = state.url.split('/').pop()?.toLowerCase();
+    const routePath = state.url.split('/').pop()?.toLowerCase() || '';
 
     // التحقق من وجود token وصلاحية المستخدم
     if (userRole === null) {
@@ -38,10 +38,10 @@ export class RoleGuard implements CanActivate {
     }
 
     // الحصول على الصفحات المسموحة للمستخدم
-    const allowedPages = this.rolePermissions[userRole as keyof typeof this.rolePermissions] || [];
+    const allowedPages = this.rolePermissions[userRole as UserRole] || [];
 
     // التحقق من أن المستخدم لديه صلاحية للوصول للصفحة
-    if (allowedPages.includes(routePath || '')) {
+    if (allowedPages.includes(routePath)) {
       return true;
     }
 
@@ -84,7 +84,7 @@ export class RoleGuard implements CanActivate {
     const userRole = this.tokenService.getUserRole();
     if (userRole === null) return false;
     
-    const allowedPages = this.rolePermissions[userRole as keyof typeof this.rolePermissions] || [];
+    const allowedPages = this.rolePermissions[userRole as UserRole] || [];
     return allowedPages.includes(pagePath.toLowerCase());
   }
 }

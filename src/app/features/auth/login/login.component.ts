@@ -7,6 +7,7 @@ import { IApiResponse } from '../../../core/models/shared.dto';
 import { ILoginResponse } from '../../../core/models/auth.dto';
 import { TokenService } from '../../../core/services/token.service';
 import { DataService } from '../../../core/services/data.service';
+import { SharedService } from '../../../core/services/shared.service';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,8 @@ export class LoginComponent implements OnInit {
   private fb: FormBuilder,
   private authService: AuthService,
   private tokenService: TokenService,
-  private router: Router // ✅ أضف ده
+  private router: Router, // ✅ أضف ده
+  private sharedService: SharedService
 ) {}
   ngOnInit(): void {
     // ✅ إنشاء الـ FormGroup
@@ -66,6 +68,7 @@ export class LoginComponent implements OnInit {
       this.loading = false;
     },
     error: (err) => {
+      this.sharedService.handleError(err);
       this.loading = false;
     },
     complete: () => (this.loading = false),
