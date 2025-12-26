@@ -26,7 +26,7 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
   @ViewChild('offcanvasEdit', { static: false }) offcanvasEdit!: ElementRef;
 
   families: IFamilyResponse[] = [];
-  
+  isDataLoaded = false;
   
   supervisors: IGetSupervisor[] = [];
   totalCount = 0;
@@ -109,12 +109,13 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
     this.familyService.getFamilies(this.pageNumber, this.rowCount).subscribe({
       next: (res) => {
           this.families = res.data.items;
-          
           this.totalCount = res.data.totalCount;
           this.pagesCount = res.data.pagesCount;
+          this.isDataLoaded = true;
           this.loadingService.hide();
       },
       error: (err) => {
+        this.isDataLoaded = true;
         this.loadingService.hide();
         this.handleError(err);
       }

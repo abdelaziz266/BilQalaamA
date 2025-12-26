@@ -18,6 +18,7 @@ import { TeacherService } from '../../../../core/services/teacher.service';
 import { StudentService } from '../../../../core/services/student.service';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
 import { TokenService, UserRole } from '../../../../core/services/token.service';
+import { LoadingService } from '../../../../core/services/loading.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -32,6 +33,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   @ViewChild('offcanvasEdit', { static: false }) offcanvasEdit!: ElementRef;
 
   lessons: ILessonResponse[] = [];
+  isDataLoaded = false;
   families: IFamilyResponse[] = [];
   teachers: ITeacherResponse[] = [];
   students: IStudentResponse[] = [];
@@ -77,6 +79,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
     private studentService: StudentService,
     private supervisorService: SupervisorService,
     private tokenService: TokenService,
+    private loadingService: LoadingService,
     private toastr: ToastrService
   ) {
     this.lessonForm = this.fb.group({
@@ -115,6 +118,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   }
 
   loadLessons(): void {
+    this.loadingService.show();
     this.lessonService.getLessons(
       this.pageNumber,
       this.rowCount,
@@ -129,8 +133,14 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
         this.lessons = res.data.items;
         this.totalCount = res.data.totalCount;
         this.pagesCount = res.data.pagesCount;
+        this.isDataLoaded = true;
+        this.loadingService.hide();
       },
-      error: (err) => this.handleError(err)
+      error: (err) => {
+        this.isDataLoaded = true;
+        this.loadingService.hide();
+        this.handleError(err);
+      }
     });
   }
 

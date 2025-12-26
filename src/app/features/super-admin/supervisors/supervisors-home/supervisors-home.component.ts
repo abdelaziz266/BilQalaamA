@@ -10,6 +10,7 @@ import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currenc
 import { SupervisorService } from '../../../../core/services/supervisor.service';
 import { TokenService, UserRole } from '../../../../core/services/token.service';
 import { SharedService } from '../../../../core/services/shared.service';
+import { LoadingService } from '../../../../core/services/loading.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -24,6 +25,7 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   @ViewChild('offcanvasEdit', { static: false }) offcanvasEdit!: ElementRef;
 
   supervisors: IGetSupervisor[] = [];
+  isDataLoaded = false;
   supervisorForm!: FormGroup;
   selectedSupervisorId: number | null = null;
   isEditMode: boolean = false;
@@ -55,6 +57,7 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private tokenService: TokenService,
     private sharedService: SharedService,
+    private loadingService: LoadingService,
     private toastr: ToastrService
   ) { }
 
@@ -137,6 +140,7 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
   }
 
   getSupervisors(): void {
+    this.loadingService.show();
     this.supervisorService.GetSupervisors(this.pageNumber=1, this.rowCount=10).subscribe({
       next: (res) => {
         if (res.status === 200) {
@@ -144,8 +148,12 @@ export class SupervisorsHomeComponent implements OnInit, AfterViewInit {
           this.pagesCount = res.data.pagesCount;
           this.totalCount = res.data.totalCount;
         }
+        this.isDataLoaded = true;
+        this.loadingService.hide();
       },
       error: (err) => {
+        this.isDataLoaded = true;
+        this.loadingService.hide();
         const errorMsg = err.error?.errors?.[0] || err.error?.message || err.message || 'حدث خطأ ما';
         this.toastr.error(errorMsg);
       }

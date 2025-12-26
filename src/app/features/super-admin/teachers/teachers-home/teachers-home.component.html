@@ -27,7 +27,7 @@
         </div>
         <div class="card-body d-flex flex-column">
             <!-- No Data State -->
-            <div *ngIf="teachers.length === 0" class="text-center py-5">
+            <div *ngIf="isDataLoaded && teachers.length === 0" class="text-center py-5">
                 <i class="ti ti-database-off fs-1 text-muted"></i>
                 <p class="mt-2 text-muted">لم يتم العثور على معلمين</p>
             </div>

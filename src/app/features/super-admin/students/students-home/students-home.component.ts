@@ -14,6 +14,7 @@ import { StudentService } from '../../../../core/services/student.service';
 import { FamilyService } from '../../../../core/services/family.service';
 import { TeacherService } from '../../../../core/services/teacher.service';
 import { TokenService, UserRole } from '../../../../core/services/token.service';
+import { LoadingService } from '../../../../core/services/loading.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -28,8 +29,10 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
   @ViewChild('offcanvasEdit', { static: false }) offcanvasEdit!: ElementRef;
 
   students: IStudentResponse[] = [];
+  isDataLoaded = false;
   families: IFamilyResponse[] = [];
-  teachers: ITeacherResponse[] = [];
+  formTeachers: ITeacherResponse[] = []; // للمعلمين في الفورم
+  filterTeachers: ITeacherResponse[] = []; // للمعلمين في الفلتر
   totalCount = 0;
   rowCount = 10;
   pageNumber = 1;
@@ -54,6 +57,7 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
     private familyService: FamilyService,
     private teacherService: TeacherService,
     private tokenService: TokenService,
+    private loadingService: LoadingService,
     private toastr: ToastrService
   ) {
     this.studentForm = this.fb.group({
@@ -72,7 +76,6 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.loadStudents();
     this.loadFamilies();
-    this.loadTeachers();
   }
 
   ngAfterViewInit(): void {
@@ -111,6 +114,7 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
   }
 
   loadStudents(): void {
+    this.loadingService.show();
     this.studentService.getStudents(
       this.pageNumber, 
       this.rowCount, 
@@ -121,8 +125,14 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
         this.students = res.data.items;
         this.totalCount = res.data.totalCount;
         this.pagesCount = res.data.pagesCount;
+        this.isDataLoaded = true;
+        this.loadingService.hide();
       },
-      error: (err) => this.handleError(err)
+      error: (err) => {
+        this.isDataLoaded = true;
+        this.loadingService.hide();
+        this.handleError(err);
+      }
     });
   }
 
@@ -134,6 +144,7 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
   clearFilters(): void {
     this.selectedFamilyIds = [];
     this.selectedTeacherIds = [];
+    this.filterTeachers = [];
     this.pageNumber = 1;
     this.loadStudents();
   }
@@ -146,12 +157,58 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  loadTeachers(): void {
-    this.teacherService.getTeachers(1, 1000).subscribe({
-      next: (res: any) => {
-        this.teachers = res.data.items;
-      }
-    });
+  onFilterFamilyChange(): void {
+    // Reset teacher filter
+    this.selectedTeacherIds = [];
+    this.filterTeachers = [];
+
+    if (this.selectedFamilyIds && this.selectedFamilyIds.length > 0) {
+      // Load teachers for all selected families
+      this.loadingService.show();
+      // For simplicity, load teachers for the first selected family
+      // If multiple families selected, load for each and merge
+      const loadPromises = this.selectedFamilyIds.map(familyId => 
+        this.teacherService.getTeachersByFamily(familyId).toPromise()
+      );
+      
+      Promise.all(loadPromises).then((results: any[]) => {
+        const allTeachers: ITeacherResponse[] = [];
+        results.forEach(res => {
+          if (res?.data?.items) {
+            allTeachers.push(...res.data.items);
+          }
+        });
+        // Remove duplicates by id
+        this.filterTeachers = allTeachers.filter((teacher, index, self) =>
+          index === self.findIndex(t => t.id === teacher.id)
+        );
+        this.loadingService.hide();
+        this.onFilterChange();
+      }).catch(err => {
+        this.loadingService.hide();
+        this.handleError(err);
+      });
+    } else {
+      this.onFilterChange();
+    }
+  }
+
+  onFamilyFormChange(): void {
+    const familyId = this.studentForm.get('familyId')?.value;
+    // Reset teacher field
+    this.studentForm.patchValue({ teacherId: null });
+    this.formTeachers = [];
+
+    if (familyId) {
+      this.teacherService.getTeachersByFamily(familyId).subscribe({
+        next: (res: any) => {
+          this.formTeachers = res.data.items;
+        },
+        error: (err) => {
+          this.handleError(err);
+        }
+      });
+    }
   }
 
   onPageChange(event: PageChangeEvent): void {
@@ -175,6 +232,7 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
   resetForm(): void {
     this.isEditMode = false;
     this.selectedStudentId = null;
+    this.formTeachers = []; // Reset form teachers
     this.studentForm.reset({
       hourlyRate: 0,
       currency: 0
@@ -191,17 +249,38 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
     this.studentService.getStudentById(id).subscribe({
       next: (res) => {
         const student = res.data;
-        this.studentForm.patchValue({
-          fullName: student.studentName,
-          email: student.email,
-          phoneNumber: student.phoneNumber,
-          familyId: student.familyId,
-          teacherId: student.teacherId,
-          hourlyRate: student.hourlyRate,
-          currency: student.currency,
-          password: '',
-          confirmPassword: ''
-        });
+        // Load teachers for this family first
+        if (student.familyId) {
+          this.teacherService.getTeachersByFamily(student.familyId).subscribe({
+            next: (teachersRes: any) => {
+              this.formTeachers = teachersRes.data.items;
+              this.studentForm.patchValue({
+                fullName: student.studentName,
+                email: student.email,
+                phoneNumber: student.phoneNumber,
+                familyId: student.familyId,
+                teacherId: student.teacherId,
+                hourlyRate: student.hourlyRate,
+                currency: student.currency,
+                password: '',
+                confirmPassword: ''
+              });
+            },
+            error: (err) => this.handleError(err)
+          });
+        } else {
+          this.studentForm.patchValue({
+            fullName: student.studentName,
+            email: student.email,
+            phoneNumber: student.phoneNumber,
+            familyId: student.familyId,
+            teacherId: student.teacherId,
+            hourlyRate: student.hourlyRate,
+            currency: student.currency,
+            password: '',
+            confirmPassword: ''
+          });
+        }
         this.studentForm.get('password')?.setValidators([]);
         this.studentForm.get('password')?.updateValueAndValidity();
         this.studentForm.get('confirmPassword')?.setValidators([]);
@@ -216,7 +295,7 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
       this.studentForm.markAllAsTouched();
       return;
     }
-
+this.loadingService.show();
     const formData = this.studentForm.getRawValue();
     if (this.isEditMode && this.selectedStudentId) {
       const updateData = { ...formData };
@@ -226,9 +305,10 @@ export class StudentsHomeComponent implements OnInit, AfterViewInit {
 
       this.studentService.updateStudent(this.selectedStudentId, updateData).subscribe({
         next: (res) => {
-          this.toastr.success(res.message);
           this.loadStudents();
           this.closeOffcanvas('offcanvas_edit');
+          this.loadingService.hide();
+          this.toastr.success(res.message);
         },
         error: (err) => this.handleError(err)
       });

@@ -11,6 +11,7 @@ import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currenc
 import { TeacherService } from '../../../../core/services/teacher.service';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
 import { TokenService, UserRole } from '../../../../core/services/token.service';
+import { LoadingService } from '../../../../core/services/loading.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -25,6 +26,7 @@ export class TeachersHomeComponent implements OnInit, AfterViewInit {
   @ViewChild('offcanvasEdit', { static: false }) offcanvasEdit!: ElementRef;
 
   teachers: ITeacherResponse[] = [];
+  isDataLoaded = false;
   supervisors: IGetSupervisor[] = [];
   teacherForm!: FormGroup;
   selectedTeacherId: number | null = null;
@@ -57,6 +59,7 @@ export class TeachersHomeComponent implements OnInit, AfterViewInit {
     private supervisorService: SupervisorService,
     private fb: FormBuilder,
     private tokenService: TokenService,
+    private loadingService: LoadingService,
     private toastr: ToastrService
   ) { }
 
@@ -118,6 +121,7 @@ export class TeachersHomeComponent implements OnInit, AfterViewInit {
   }
 
   getTeachers(): void {
+    this.loadingService.show();
     this.teacherService.getTeachers(this.pageNumber, this.rowCount).subscribe({
       next: (res) => {
         if (res.status === 200) {
@@ -125,8 +129,14 @@ export class TeachersHomeComponent implements OnInit, AfterViewInit {
           this.pagesCount = res.data.pagesCount;
           this.totalCount = res.data.totalCount;
         }
+        this.isDataLoaded = true;
+        this.loadingService.hide();
       },
-      error: (err) => this.handleError(err)
+      error: (err) => {
+        this.isDataLoaded = true;
+        this.loadingService.hide();
+        this.handleError(err);
+      }
     });
   }
 
