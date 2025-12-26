@@ -11,6 +11,7 @@ import { CurrencyOptions, CurrencyLabels } from '../../../../core/models/currenc
 import { FamilyService } from '../../../../core/services/family.service';
 import { SupervisorService } from '../../../../core/services/supervisor.service';
 import { TokenService, UserRole } from '../../../../core/services/token.service';
+import { LoadingService } from '../../../../core/services/loading.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -25,6 +26,7 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
   @ViewChild('offcanvasEdit', { static: false }) offcanvasEdit!: ElementRef;
 
   families: IFamilyResponse[] = [];
+  
   supervisors: IGetSupervisor[] = [];
   totalCount = 0;
   rowCount = 10;
@@ -45,6 +47,7 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
     private familyService: FamilyService,
     private supervisorService: SupervisorService,
     private tokenService: TokenService,
+    private loadingService: LoadingService,
     private toastr: ToastrService
   ) {
     this.familyForm = this.fb.group({
@@ -101,21 +104,31 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
   }
 
   loadFamilies(): void {
+    this.loadingService.show();
     this.familyService.getFamilies(this.pageNumber, this.rowCount).subscribe({
       next: (res) => {
           this.families = res.data.items;
           
           this.totalCount = res.data.totalCount;
           this.pagesCount = res.data.pagesCount;
+          this.loadingService.hide();
       },
-      error: (err) => this.handleError(err)
+      error: (err) => {
+        this.loadingService.hide();
+        this.handleError(err);
+      }
     });
   }
 
   loadSupervisors(): void {
+    this.loadingService.show();
     this.supervisorService.GetSupervisors(1, 1000).subscribe({
       next: (res: any) => {
         this.supervisors = res.data.items;
+        this.loadingService.hide();
+      },
+      error: (err) => {
+        this.loadingService.hide();
       }
     });
   }
@@ -154,6 +167,7 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
   openEditModal(id: number): void {
     this.isEditMode = true;
     this.selectedFamilyId = id;
+    this.loadingService.show();
     this.familyService.getFamilyById(id).subscribe({
       next: (res) => {
           const family = res.data;
@@ -172,8 +186,12 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
       this.familyForm.get('password')?.updateValueAndValidity();
       this.familyForm.get('confirmPassword')?.setValidators([]);
       this.familyForm.get('confirmPassword')?.updateValueAndValidity();
+          this.loadingService.hide();
       },
-      error: (err) => this.handleError(err)
+      error: (err) => {
+        this.loadingService.hide();
+        this.handleError(err);
+      }
     });
   }
 
@@ -190,6 +208,8 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
       delete formData.supervisorId;
     }
 
+    this.loadingService.show();
+
     if (this.isEditMode && this.selectedFamilyId) {
       const updateData = { ...formData };
       if (!updateData.password) delete updateData.password;
@@ -197,11 +217,15 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
 
       this.familyService.updateFamily(this.selectedFamilyId, updateData).subscribe({
         next: (res) => {
+          this.loadingService.hide();
           this.toastr.success(res.message);
             this.loadFamilies();
             this.closeOffcanvas('offcanvas_edit');
         },
-        error: (err) => this.handleError(err)
+        error: (err) => {
+          this.loadingService.hide();
+          this.handleError(err);
+        }
       });
     } else {
       const createData = { ...formData };
@@ -209,11 +233,15 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
 
       this.familyService.createFamily(createData).subscribe({
         next: (res) => {
+          this.loadingService.hide();
           this.toastr.success(res.message);
             this.loadFamilies();
             this.closeOffcanvas('offcanvas_add');
         },
-        error: (err) => this.handleError(err)
+        error: (err) => {
+          this.loadingService.hide();
+          this.handleError(err);
+        }
       });
     }
   }
@@ -224,12 +252,17 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
 
   onDeleteFamily(): void {
     if (this.selectedFamilyId) {
+      this.loadingService.show();
       this.familyService.deleteFamily(this.selectedFamilyId).subscribe({
         next: (res) => {
+          this.loadingService.hide();
           this.toastr.success(res.message);
             this.loadFamilies();
         },
-        error: (err) => this.handleError(err)
+        error: (err) => {
+          this.loadingService.hide();
+          this.handleError(err);
+        }
       });
     }
   }

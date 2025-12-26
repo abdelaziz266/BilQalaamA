@@ -24,7 +24,6 @@ export class FamilyService {
   pageNumber: number = 1,
   pageSize: number = 10000
 ): Observable<any> {
-
   let params = new HttpParams()
     .set('pageNumber', pageNumber.toString())
     .set('pageSize', pageSize.toString());

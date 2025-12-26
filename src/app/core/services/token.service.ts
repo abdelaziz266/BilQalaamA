@@ -109,7 +109,6 @@ export class TokenService {
    */
   getUserName(): string {
     const decoded = this.decodeToken();
-    debugger;
     return decoded?.name || decoded?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || 'مستخدم';
   }
 

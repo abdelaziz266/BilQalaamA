@@ -143,7 +143,6 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   }
 
   onSupervisorChange(): void {
-    debugger;
     if (this.selectedSupervisorIds.length > 0) {
       // Load families based on selected supervisors
       this.familyService.getFamiliesBySupervisor(this.selectedSupervisorIds).subscribe({
@@ -169,7 +168,6 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
     }
   }
     onFamilyChange(): void {
-      debugger;
       if(this.selectedFamilyIds.length > 0) {
       // Load families based on selected supervisors
       this.studentService.getStudentsByFamilies(this.selectedFamilyIds).subscribe({

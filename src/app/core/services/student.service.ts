@@ -18,7 +18,6 @@ export class StudentService {
   familyIds?: number[],
   teacherIds?: number[]
 ): Observable<any> {
-
   let params = new HttpParams()
     .set('pageNumber', pageNumber.toString())
     .set('pageSize', pageSize.toString());

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { AuthService } from '../../../core/services/auth.service';
+import { LoadingService } from '../../../core/services/loading.service';
 
 @Component({
   selector: 'app-spinner',
@@ -10,6 +10,6 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './spinner.component.scss'
 })
 export class SpinnerComponent {
-  constructor(public authService: AuthService) {}
+  constructor(public loadingService: LoadingService) {}
 
 }

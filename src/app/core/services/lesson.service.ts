@@ -90,3 +90,6 @@ export class LessonService {
     return this.http.delete<any>(`${this.apiUrl}delete/${id}`);
   }
 }
+    );
+  }
+}

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AuthService } from '../services/auth.service';
 import { TokenService } from '../services/token.service';
 
 @Injectable({
@@ -15,11 +14,20 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
 
-    const token = this.tokenService.getToken();;
-    if (token) {
-      return true;
+    const token = this.tokenService.getToken();
+    
+    // التحقق من وجود التوكن
+    if (!token) {
+      this.tokenService.clearToken();
+      return this.router.parseUrl('/login');
     }
 
-    return this.router.parseUrl('/login');
+    // التحقق من صلاحية التوكن (هل انتهى أم لا)
+    if (this.tokenService.isTokenExpired()) {
+      this.tokenService.clearToken();
+      return this.router.parseUrl('/login');
+    }
+
+    return true;
   }
 }
