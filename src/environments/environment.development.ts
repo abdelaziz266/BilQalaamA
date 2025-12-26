@@ -7,6 +7,6 @@
 //Production
 export const environment = {
     production: true,
-    apiUrl: 'http://bilqalaam.somee.com/api/',
+    apiUrl: 'https://bilqalaam.somee.com/api/',
     secretKey: 'ADH53476@y77', // هذا هو المفتاح السري
 };
