@@ -27,6 +27,7 @@ export class FamiliesHomeComponent implements OnInit, AfterViewInit {
 
   families: IFamilyResponse[] = [];
   
+  
   supervisors: IGetSupervisor[] = [];
   totalCount = 0;
   rowCount = 10;

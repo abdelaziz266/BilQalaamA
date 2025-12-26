@@ -1,7 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { finalize } from 'rxjs';
-import { AuthService } from '../services/auth.service';
+import { LoadingService } from '../services/loading.service';
 
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   // لو مكتوب في الهيدر "Skip-Interceptor"، تجاهله تمامًا
@@ -9,12 +9,12 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const authService = inject(AuthService);
-  authService.show();
+  const loadingService = inject(LoadingService);
+  loadingService.show();
 
   return next(req).pipe(
     finalize(() => {
-      authService.hide();
+      loadingService.hide();
     })
   );
 };
