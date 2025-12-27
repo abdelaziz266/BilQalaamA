@@ -34,10 +34,17 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
 
   lessons: ILessonResponse[] = [];
   isDataLoaded = false;
+  
+  // All items
+  allFamilies: IFamilyResponse[] = [];
+  allTeachers: ITeacherResponse[] = [];
+  allStudents: IStudentResponse[] = [];
+  supervisors: IGetSupervisor[] = [];
+  
+  // Filter items (dynamic based on selections)
   families: IFamilyResponse[] = [];
   teachers: ITeacherResponse[] = [];
   students: IStudentResponse[] = [];
-  supervisors: IGetSupervisor[] = [];
 
   totalCount = 0;
   rowCount = 10;
@@ -84,7 +91,7 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   ) {
     this.lessonForm = this.fb.group({
       studentId: [null, [Validators.required]],
-      teacherId: [null, [Validators.required]],
+      teacherId: [null], // سيتم تحديد الـ validator dynamically
       lessonDate: [new Date(), [Validators.required]],
       durationMinutes: [60, [Validators.required, Validators.min(1)]],
       evaluation: [null],
@@ -94,11 +101,48 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadLessons();
-    this.loadFamilies();
-
-    this.loadTeachers();
-    this.loadStudents();
+    this.loadInitialData();
     this.loadSupervisors();
+    this.updateTeacherFieldValidators();
+  }
+
+  updateTeacherFieldValidators(): void {
+    const teacherField = this.lessonForm.get('teacherId');
+    if (this.isSuperAdminOrAdmin()) {
+      teacherField?.setValidators([Validators.required]);
+    } else {
+      teacherField?.clearValidators();
+    }
+    teacherField?.updateValueAndValidity();
+  }
+
+  loadInitialData(): void {
+    // Load all families initially
+    this.familyService.getFamilies(1, 1000).subscribe({
+      next: (res: any) => {
+        this.allFamilies = res.data.items;
+        this.families = res.data.items;
+      }
+    });
+    if(this.isSuperAdminOrAdmin()){
+      // Load all teachers initially
+      this.teacherService.getTeachers(1, 1000).subscribe({
+        next: (res: any) => {
+          this.allTeachers = res.data.items;
+          this.teachers = res.data.items;
+        }
+      });
+    }
+    if(this.isTeacher()){
+
+      // Load all students initially
+      this.studentService.getStudents(1, 1000).subscribe({
+        next: (res: any) => {
+          this.allStudents = res.data.items;
+          this.students = res.data.items;
+        }
+      });
+    }
   }
 
   ngAfterViewInit(): void {
@@ -153,49 +197,98 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
   }
 
   onSupervisorChange(): void {
+    this.selectedFamilyIds = [];
+    this.selectedTeacherIds = [];
+    this.selectedStudentIds = [];
+    
     if (this.selectedSupervisorIds.length > 0) {
-      // Load families based on selected supervisors
+      this.loadingService.show();
+      // Load families for selected supervisors
       this.familyService.getFamiliesBySupervisor(this.selectedSupervisorIds).subscribe({
         next: (res: any) => {
           this.families = res.data.items;
-          // Reset family filter when supervisor changes
-          this.selectedFamilyIds = [];
+          // Reset dependent filters
+          this.teachers = this.allTeachers;
+          this.students = this.allStudents;
+          this.loadingService.hide();
+          this.pageNumber = 1;
+          this.loadLessons();
         },
-        error: (err) => this.handleError(err)
+        error: (err) => {
+          this.loadingService.hide();
+          this.handleError(err);
+        }
       });
-      this.teacherService.getTeavhersBySupervisors(this.selectedSupervisorIds).subscribe({
-        next: (res: any) => {
-          this.teachers = res.data.items;
-          // Reset family filter when supervisor changes
-          this.selectedTeacherIds = [];
-        },
-        error: (err) => this.handleError(err)
-      });
-    }
-    else {
-      this.loadFamilies();
-      this.loadTeachers();
+    } else {
+      this.families = this.allFamilies;
+      this.teachers = this.allTeachers;
+      this.students = this.allStudents;
+      this.pageNumber = 1;
+      this.loadLessons();
     }
   }
-    onFamilyChange(): void {
-      if(this.selectedFamilyIds.length > 0) {
-      // Load families based on selected supervisors
-      this.studentService.getStudentsByFamilies(this.selectedFamilyIds).subscribe({
-        next: (res: any) => {
-          this.students = res.data.items;
-          // Reset family filter when supervisor changes
-          this.selectedStudentIds = [];
-        },
-        error: (err) => this.handleError(err)
-      });
-    }
-    else {
-      this.loadStudents();
-    }
 
-    // Reset page and reload lessons
-    this.pageNumber = 1;
-    this.loadLessons();
+  onTeacherChange(): void {
+    this.selectedFamilyIds = [];
+    this.selectedStudentIds = [];
+    
+    if (this.selectedTeacherIds.length > 0) {
+      this.loadingService.show();
+      // Load families and students for selected teachers
+      Promise.all([
+        this.familyService.getFamiliesByTeachers(this.selectedTeacherIds).toPromise(),
+        this.studentService.getStudentsByTeachers(this.selectedTeacherIds).toPromise()
+      ]).then((results: any[]) => {
+        if (results[0]?.data?.items) {
+          this.families = results[0].data.items;
+        }
+        if (results[1]?.data?.items) {
+          this.students = results[1].data.items;
+        }
+        this.loadingService.hide();
+        this.pageNumber = 1;
+        this.loadLessons();
+      }).catch(err => {
+        this.loadingService.hide();
+        this.handleError(err);
+      });
+    } else {
+      this.families = this.allFamilies;
+      this.students = this.allStudents;
+      this.pageNumber = 1;
+      this.loadLessons();
+    }
+  }
+
+  onFamilyChange(): void {
+    this.selectedStudentIds = [];
+    
+    if (this.selectedFamilyIds.length > 0) {
+      this.loadingService.show();
+      // Load teachers and students for selected families
+      Promise.all([
+        this.teacherService.getTeachersByFamilies(this.selectedFamilyIds).toPromise(),
+        this.studentService.getStudentsByFamilies(this.selectedFamilyIds).toPromise()
+      ]).then((results: any[]) => {
+        if (results[0]?.data?.items) {
+          this.teachers = results[0].data.items;
+        }
+        if (results[1]?.data?.items) {
+          this.students = results[1].data.items;
+        }
+        this.loadingService.hide();
+        this.pageNumber = 1;
+        this.loadLessons();
+      }).catch(err => {
+        this.loadingService.hide();
+        this.handleError(err);
+      });
+    } else {
+      this.teachers = this.allTeachers;
+      this.students = this.allStudents;
+      this.pageNumber = 1;
+      this.loadLessons();
+    }
   }
 
   onSupervisorClear(): void {
@@ -228,6 +321,26 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
         this.students = res.data.items;
       }
     });
+  }
+
+  onFormTeacherChange(): void {
+    // Only load students when teacher is selected and user is not a teacher
+    const teacherId = this.lessonForm.get('teacherId')?.value;
+    if (teacherId && !this.isTeacher()) {
+      this.loadingService.show();
+      this.studentService.getByTeacherId(teacherId).subscribe({
+        next: (res: any) => {
+          if (res.data?.items) {
+            this.students = res.data.items;
+          }
+          this.loadingService.hide();
+        },
+        error: (err) => {
+          this.loadingService.hide();
+          this.handleError(err);
+        }
+      });
+    }
   }
 
   loadSupervisors(): void {
@@ -301,6 +414,12 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
     this.toDate = undefined;
     this.prevFromDate = undefined;
     this.prevToDate = undefined;
+    
+    // Reset filter lists to all items
+    this.families = this.allFamilies;
+    this.teachers = this.allTeachers;
+    this.students = this.allStudents;
+    
     this.pageNumber = 1;
     this.loadLessons();
   }
@@ -320,19 +439,41 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
     this.lessonService.getLessonById(id).subscribe({
       next: (res) => {
         const lesson = res.data;
-        // Convert date string to Date object for bsDatepicker
-        const lessonDate = new Date(lesson.lessonDate);
-
-        this.lessonForm.patchValue({
-          studentId: lesson.studentId,
-          teacherId: lesson.teacherId,
-          lessonDate: lessonDate,
-          durationMinutes: lesson.durationMinutes,
-          evaluation: lesson.evaluation,
-          notes: lesson.notes || ''
-        });
+        // Load students based on teacher ID before patching
+        if (lesson.teacherId && !this.isTeacher()) {
+          this.loadingService.show();
+          this.studentService.getByTeacherId(lesson.teacherId).subscribe({
+            next: (teacherRes: any) => {
+              if (teacherRes.data?.items) {
+                this.students = teacherRes.data.items;
+              }
+              this.loadingService.hide();
+              this.patchLessonForm(lesson);
+            },
+            error: (err) => {
+              this.loadingService.hide();
+              this.handleError(err);
+            }
+          });
+        } else {
+          this.patchLessonForm(lesson);
+        }
       },
       error: (err) => this.handleError(err)
+    });
+  }
+
+  private patchLessonForm(lesson: any): void {
+    // Convert date string to Date object for bsDatepicker
+    const lessonDate = new Date(lesson.lessonDate);
+
+    this.lessonForm.patchValue({
+      studentId: lesson.studentId,
+      teacherId: lesson.teacherId,
+      lessonDate: lessonDate,
+      durationMinutes: lesson.durationMinutes,
+      evaluation: lesson.evaluation,
+      notes: lesson.notes || ''
     });
   }
 
@@ -442,5 +583,14 @@ export class LessonsHomeComponent implements OnInit, AfterViewInit {
 
   isSuperAdmin(): boolean {
     return this.tokenService.getUserRole() === UserRole.SuperAdmin;
+  }
+
+  isTeacher(): boolean {
+    return this.tokenService.getUserRole() === UserRole.Teacher;
+  }
+
+  isSuperAdminOrAdmin(): boolean {
+    const role = this.tokenService.getUserRole();
+    return role === UserRole.SuperAdmin || role === UserRole.Admin;
   }
 }

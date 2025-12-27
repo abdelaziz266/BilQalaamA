@@ -72,4 +72,27 @@ getStudentsByFamilies(
   deleteStudent(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}delete/${id}`);
   }
+
+  getStudentsByTeachers(
+    teacherIds: number[],
+    pageNumber: number = 1,
+    pageSize: number = 10000
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+
+    teacherIds.forEach(id => {
+      params = params.append('teacherIds', id.toString());
+    });
+
+    return this.http.get<any>(
+      `${this.apiUrl}by-teachers`,
+      { params }
+    );
+  }
+  
+  getByTeacherId(teacherId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}by-teacher/${teacherId}`);
+  }
 }

@@ -63,4 +63,24 @@ export class TeacherService {
       }
     });
   }
+
+  getTeachersByFamilies(
+    familyIds: number[],
+    pageNumber: number = 1,
+    pageSize: number = 10000
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+
+    familyIds.forEach(id => {
+      params = params.append('familyIds', id.toString());
+    });
+
+    return this.http.get<any>(
+      `${this.apiUrl}by-families`,
+      { params }
+    );
+  }
+
 }

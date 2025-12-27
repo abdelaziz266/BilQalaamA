@@ -24,17 +24,17 @@
             <div class="d-flex align-items-center gap-2 flex-nowrap">
                 <p-multiselect [options]="supervisors" [(ngModel)]="selectedSupervisorIds" optionLabel="supervisorName"
                     optionValue="id" placeholder="فلتر حسب المشرف" class="form-control" [filter]="true"
-                    [showClear]="true" (onChange)="onSupervisorChange()" (onClear)="onSupervisorClear()"
+                    [showClear]="true" (onChange)="onSupervisorChange()"
                     [style]="{'min-width': '200px'}">
                 </p-multiselect>
                 <p-multiselect [options]="families" [(ngModel)]="selectedFamilyIds" optionLabel="familyName"
                     optionValue="id" placeholder="فلتر حسب العائلة" class="form-control" [filter]="true"
-                    [showClear]="true" (onChange)="onFamilyChange()" (onClear)="onFamilyClear()"
+                    [showClear]="true" (onChange)="onFamilyChange()"
                     [style]="{'min-width': '200px'}">
                 </p-multiselect>
                 <p-multiselect [options]="teachers" [(ngModel)]="selectedTeacherIds" optionLabel="teacherName"
                     optionValue="id" placeholder="فلتر حسب المعلم" class="form-control" [filter]="true"
-                    [showClear]="true" (onChange)="onFilterChange()" [style]="{'min-width': '200px'}">
+                    [showClear]="true" (onChange)="onTeacherChange()" [style]="{'min-width': '200px'}">
                 </p-multiselect>
                 <p-multiselect [options]="students" [(ngModel)]="selectedStudentIds" optionLabel="studentName"
                     optionValue="id" placeholder="فلتر حسب الطالب" class="form-control" [filter]="true"
@@ -122,6 +122,15 @@
     <div class="offcanvas-body">
         <form [formGroup]="lessonForm" (ngSubmit)="submitForm()">
             <div class="row">
+                <div class="col-md-6 mb-3" *ngIf="isSuperAdminOrAdmin()">
+                    <label class="form-label">المعلم <span class="text-danger">*</span></label>
+                    <p-select [options]="teachers" formControlName="teacherId" optionLabel="teacherName"
+                        optionValue="id" placeholder="اختر المعلم" class="form-control w-100"
+                        [filter]="true" (onChange)="onFormTeacherChange()"></p-select>
+                    <div class="text-danger mt-1" *ngIf="teacherId.invalid && (teacherId.dirty || teacherId.touched)">
+                        <small *ngIf="teacherId.errors?.['required']">المعلم مطلوب.</small>
+                    </div>
+                </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">الطالب <span class="text-danger">*</span></label>
                     <p-select [options]="students" formControlName="studentId" optionLabel="studentName"
@@ -129,16 +138,6 @@
                         [filter]="true"></p-select>
                     <div class="text-danger mt-1" *ngIf="studentId.invalid && (studentId.dirty || studentId.touched)">
                         <small *ngIf="studentId.errors?.['required']">الطالب مطلوب.</small>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">المعلم <span class="text-danger">*</span></label>
-                    <p-select [options]="teachers" formControlName="teacherId" optionLabel="teacherName"
-                        optionValue="id" placeholder="اختر المعلم" class="form-control w-100"
-                        [filter]="true"></p-select>
-                    <div class="text-danger mt-1" *ngIf="teacherId.invalid && (teacherId.dirty || teacherId.touched)">
-                        <small *ngIf="teacherId.errors?.['required']">المعلم مطلوب.</small>
                     </div>
                 </div>
 
@@ -190,6 +189,15 @@
     <div class="offcanvas-body">
         <form [formGroup]="lessonForm" (ngSubmit)="submitForm()">
             <div class="row">
+                <div class="col-md-6 mb-3" *ngIf="isSuperAdminOrAdmin()">
+                    <label class="form-label">المعلم <span class="text-danger">*</span></label>
+                    <p-select [options]="teachers" formControlName="teacherId" optionLabel="teacherName"
+                        optionValue="id" placeholder="اختر المعلم" class="form-control w-100"
+                        [filter]="true" (onChange)="onFormTeacherChange()"></p-select>
+                    <div class="text-danger mt-1" *ngIf="teacherId.invalid && (teacherId.dirty || teacherId.touched)">
+                        <small *ngIf="teacherId.errors?.['required']">المعلم مطلوب.</small>
+                    </div>
+                </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">الطالب <span class="text-danger">*</span></label>
                     <p-select [options]="students" formControlName="studentId" optionLabel="studentName"
@@ -199,17 +207,6 @@
                         <small *ngIf="studentId.errors?.['required']">الطالب مطلوب.</small>
                     </div>
                 </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">المعلم <span class="text-danger">*</span></label>
-                    <p-select [options]="teachers" formControlName="teacherId" optionLabel="teacherName"
-                        optionValue="id" placeholder="اختر المعلم" class="form-control w-100"
-                        [filter]="true"></p-select>
-                    <div class="text-danger mt-1" *ngIf="teacherId.invalid && (teacherId.dirty || teacherId.touched)">
-                        <small *ngIf="teacherId.errors?.['required']">المعلم مطلوب.</small>
-                    </div>
-                </div>
-
                 <div class="col-md-6 mb-3">
                     <label class="form-label">تاريخ الدرس <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" bsDatepicker formControlName="lessonDate"
