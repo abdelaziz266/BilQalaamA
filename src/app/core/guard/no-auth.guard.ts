@@ -12,7 +12,7 @@ export class NoAuthGuard implements CanActivate {
     const token = this.tokenService.getToken();;
     // ✅ لو فيه token المستخدم بالفعل عامل Login → نرجّعه على Home
     if (token) {
-      return this.router.parseUrl('/company');
+      return this.router.parseUrl('/Dashboard');
     }
 
     // ✅ لو مفيش token يدخل عادي على صفحة الـ Login أو Register

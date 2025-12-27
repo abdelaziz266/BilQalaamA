@@ -10,7 +10,7 @@ export const routes={
  lockScreen: '/lock-screen',
 
  //Dashboard
- index:'/index',
+ index:'/Dashboard',
   //CRM
   companies: '/Companies',
   // Service Category
@@ -21,4 +21,5 @@ export const routes={
   families: '/Families',
   students: '/Students',
   lessons: '/Lessons',
+  dashboard: '/Dashboard',
 };

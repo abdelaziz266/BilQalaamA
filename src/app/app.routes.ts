@@ -6,7 +6,7 @@ import { RoleGuard } from './core/guard/role.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'Supervisors',
+    redirectTo: 'Dashboard',
     pathMatch: 'full'
   },
 
@@ -49,6 +49,11 @@ export const routes: Routes = [
             path: 'Lessons',
             loadComponent: () => import('./features/super-admin/lessons/lessons-home/lessons-home.component').then(m => m.LessonsHomeComponent),
             canActivate: [AuthGuard, RoleGuard]
+          },
+          {
+            path: 'Dashboard',
+            loadComponent: () => import('./features/super-admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
+            canActivate: [AuthGuard, RoleGuard]
           }
         ]
       }
@@ -56,7 +61,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'Supervisors',
+    redirectTo: 'Dashboard',
     pathMatch: 'full'
   }
 ] as const;

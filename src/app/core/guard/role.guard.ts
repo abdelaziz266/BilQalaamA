@@ -15,9 +15,9 @@ export class RoleGuard implements CanActivate {
   ) { }
 
   private readonly rolePermissions: Record<UserRole, string[]> = {
-    [UserRole.SuperAdmin]: ['supervisors', 'teachers', 'families', 'students', 'lessons'],
-    [UserRole.Admin]: ['teachers', 'families', 'students', 'lessons'],
-    [UserRole.Teacher]: ['lessons'],
+    [UserRole.SuperAdmin]: ['dashboard', 'supervisors', 'teachers', 'families', 'students', 'lessons'],
+    [UserRole.Admin]: ['dashboard', 'teachers', 'families', 'students', 'lessons'],
+    [UserRole.Teacher]: ['dashboard', 'lessons'],
     [UserRole.Student]: [],
     [UserRole.Family]: []
   };
@@ -51,11 +51,11 @@ export class RoleGuard implements CanActivate {
     
     // إعادة التوجيه حسب الدور
     if (userRole === UserRole.SuperAdmin) {
-      return this.router.parseUrl('/Supervisors');
+      return this.router.parseUrl('/Dashboard');
     } else if (userRole === UserRole.Admin) {
-      return this.router.parseUrl('/Teachers');
+      return this.router.parseUrl('/Dashboard');
     } else if (userRole === UserRole.Teacher) {
-      return this.router.parseUrl('/Lessons');
+      return this.router.parseUrl('/Dashboard');
     } else {
       this.toastr.error('ليس لديك صلاحيات كافية للوصول لهذه الصفحة');
       return this.router.parseUrl('/login');

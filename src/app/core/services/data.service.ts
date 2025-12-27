@@ -432,7 +432,15 @@ export class DataService {
       showAsTab: true,
       separateRoute: false,
       menu: [
-        
+        {
+          menuValue: 'لوحة البيانات',
+          icon: 'chart-bar',
+          hasSubRoute: false,
+          showSubRoute: false,
+          route: routes.dashboard,
+          base: 'Dashboard',
+          subRoutes: [],
+        },
         {
           menuValue: 'المشرفين',
           icon: 'users',
